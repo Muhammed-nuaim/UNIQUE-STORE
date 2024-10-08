@@ -60,6 +60,9 @@
                                 <input type="password" class="form-control" id="cpassword" name="cpassword" placeholder="Confirm your password">
                                 <div id="error4" class="error-message"></div>
                             </div>
+                            <%if(locals.message && message.length > 0){ %>
+                                <div class="alert alert-danger text-center"><%=message%></div>
+                            <% } %>
                             <button type="submit" class="btn btn-primary btn-block mt-3">Sign Up</button>
                             <p class="text-center mt-4">Already have an account? <a href="/signin">Sign In</a></p>
                             <div class="text-center mt-4">

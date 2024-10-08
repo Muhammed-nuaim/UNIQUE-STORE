@@ -34,6 +34,54 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+<style>
+	.header_nav_option .sign-in-link {
+		font-size: 16px;
+		color:#333;
+		margin-right: 15px;
+		text-decoration: none;
+		font-weight: 600;
+	}
+	.header_nav_option .sign-in-link:hover {
+		color: #ff7f50;
+	}
+	.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* Hide by default */
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 19px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    right: 0;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+.header-v4 {
+    position: relative;
+    z-index: 500;
+}
+</style>
 </head>
 <body class="animsition">
 	
@@ -85,34 +133,43 @@
 									<li><a href="index.html">Homepage 1</a></li>
 								</ul>
 							</li>
-
+					
 							<li class="active-menu">
 								<a href="product.html">Shop</a>
 							</li>
-
+					
 							<li class="label1" data-label1="hot">
 								<a href="shoping-cart.html">Features</a>
 							</li>
-
+					
 							<li>
 								<a href="blog.html">Blog</a>
 							</li>
-
+					
 							<li>
 								<a href="about.html">About</a>
 							</li>
-
+					
 							<li>
 								<a href="contact.html">Contact</a>
 							</li>
-							<li>
-								<a href="/signup">Sign up</a>
-							</li>
-							<li>
-								<a href="/login">Login</a>
-							</li>
 						</ul>
-					</div>	
+					</div>
+					<div class="header_nav_option">
+					<%if(locals.user){%>
+						<div class="dropdown">
+							<a href="#" class="sign-in-link"><%= locals.user.name %></a>
+							<div class="dropdown-content">
+								<a href="/userprofile">Profile</a>
+								<a href="/logout">Logout</a>
+							</div>
+						</div>
+					<%}else{%>
+						
+							<a href="/signup" class="sign-in-link">Sign up</a>
+							<a href="/login" class="sign-in-link">Login</a>
+					<%}%>
+				</div>
 
 					<!-- Icon header -->
 					<div class="wrap-icon-header flex-w flex-r-m">

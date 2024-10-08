@@ -13,7 +13,16 @@ const pageNotFound = async(req,res) => {
 
 const loadHomePage = async( req,res ) => {
     try {
-       return res.render("index")
+        const user = await req.session.user
+        if(user) {
+            console.log(user);
+            
+            const userData = await User.findOne({_id:user})
+            res.render("home",{user:userData})
+        } else {
+            return res.render('home')
+        }
+
     } catch (error) {
         console.log("Home page is not found");
         res.status(500).send("Server error")
@@ -74,7 +83,7 @@ const signup = async(req,res) =>{
         const findUser = await User.findOne({email});
 
         if (findUser) {
-            return res.render("sign-up",{meassage:"This email is already exist"})
+            return res.render('sign-up',{message:"This email is already exist"})
         }
 
         const otp = generateOtp();
@@ -94,16 +103,49 @@ const signup = async(req,res) =>{
 
     } catch (error) {
         console.error("Error for signup",error);
-        res.redirct("/pageNotFound")
+        res.redirect("/pageNotFound")
     }
 }
 
-const loadlogin = async(req,res) =>{
+const loadLogin = async(req,res) =>{
     try {
-        return res.render("login")
+        if(!req.session.user) {
+            return res.render("login")
+        } else {
+            res.redirect('/')
+        }
     } catch (error) {
-        console.log("Login page is not found");
-        res.status(500).send("Server error")
+        res.redirect('/pageNOtFound')
+    }
+}
+
+const login = async(req,res) => {
+    try {
+        
+        const {email,password} = req.body;
+
+        const findUser = await User.findOne({isAdmin:0,email:email})
+
+        if(!findUser) {
+            return res.render('login',{message:"User not found"})
+        }
+        if(findUser.isBlocked) {
+            return res.render('login',{message:"User is blocked by admin"})
+        }
+
+        const passwordMatch = await bcrypt.compare(password,findUser.password)
+
+        if(!passwordMatch) {
+            return res.render('login',{message:"Incorrect Password"})
+        }
+
+        req.session.user = findUser._id;
+        res.redirect('/')
+
+    } catch (error) {
+        console.error("login error",error)
+
+        res.render('login',{message:"Login Failed, Please try again later"})
     }
 }
 
@@ -168,7 +210,8 @@ module.exports={
     loadHomePage,
     loadSignup,
     signup,
-    loadlogin,
+    loadLogin,
+    login,
     verifyOtp,
     resendOtp
 }
