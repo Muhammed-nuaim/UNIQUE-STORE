@@ -10,14 +10,10 @@ const passport = require("./config/passport")
 db();
 app.use(express.static("public"))
 
-// app.use(nocache());
-// app.use((req, res, next) => {
-//     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-//     res.set('Pragma', 'no-cache');
-//     res.set('Expires', '0');
-//     next();
-// });
-
+app.use((req,res,next) => {
+    res.set('cache-control','no-store')
+    next();
+})
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -37,13 +33,13 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 const userRouter = require("./routes/userRouter");
-// const adminRoute = require("./routes/adminRoute");
+const adminRoute = require("./routes/adminRouter");
 
 app.set('view engine', 'ejs');  // Set the view engine here
 app.set('views',[path.join(__dirname,'views/User'),path.join(__dirname,'views/Admin')]);
 
 app.use('/',userRouter);
-// app.use('/admin', adminRoute);
+app.use('/admin',adminRoute);
 
 app.listen(process.env.PORT, () => {
     console.log("http://localhost:3000");

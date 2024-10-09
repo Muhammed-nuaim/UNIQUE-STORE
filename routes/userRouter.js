@@ -11,6 +11,7 @@ user_route.post('/verify-otp',userController.verifyOtp)
 user_route.post("/resend-otp",userController.resendOtp);
 user_route.get('/login',userController.loadLogin)
 user_route.post('/login',userController.login)
+user_route.get('/logout',userController.logout)
 
 user_route.get('/auth/google',passport.authenticate('google',{scope:['profile','email']}))
 user_route.get('/auth/google/callback',passport.authenticate('google',{failureRedirect: '/signup'}),(req,res) => {
