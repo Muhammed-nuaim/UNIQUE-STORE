@@ -58,7 +58,7 @@ const  customerBlocked = async (req,res)=>{
         await User.updateOne({_id:id},{$set:{isBlocked:true}})
         res.redirect('/admin/users')
     } catch (error) {
-        res.redirect('/pageerror')
+        res.redirect('/page-error')
         
     }
 }
@@ -70,14 +70,16 @@ const customerUnblocked = async (req,res)=>{
         await User.updateOne({_id:id},{$set:{isBlocked:false}})
         res.redirect('/admin/users')
     } catch (error) {
-        res.redirect('/pageerror')
+        res.redirect('/page-error')
         
     }
 }
 
 
+
+
 module.exports = {
     customerInfo,
     customerUnblocked,
-    customerBlocked
+    customerBlocked,
 };
