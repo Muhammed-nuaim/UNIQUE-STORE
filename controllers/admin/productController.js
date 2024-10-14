@@ -3,6 +3,7 @@ const Category = require("../../models/CategoryModel");
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
+const { log } = require("console");
 
 // Load the page to add products
 const getProductAddPage = async (req, res) => {
@@ -47,28 +48,39 @@ const addProducts = async (req, res) => {
 
             // Validate category
             const categoryId = await Category.findOne({ name: category });
-            if (!categoryId) {
-                return res.status(400).json({ error: "Invalid category name" });
-            }
-
-            // Create new product without "brand"
-            const newProduct = new Product({
-                productName: productName,
-                description: description,
-                category: categoryId._id,
-                regularPrice: regularPrice,
-                salePrice: salePrice,
-                createdOn: new Date(),
-                quantity: quantity,
-                color: color,
-                productImage: images,
-                status: 'Available', // Fixed typo here
-            });
-
-            // Save the product to the database
-            await newProduct.save();
+            if(categoryId){
+                const newProduct = new Product({
+                    productName: productName,
+                    description: description,
+                    category:categoryId._id,
+                    regularPrice: regularPrice,
+                    salePrice: salePrice,
+                    createdOn: new Date(),
+                    quantity: quantity,
+                    color: color,
+                    productImage: images,
+                    status: 'Available', // Fixed typo here
+                });
+                await newProduct.save();
 
             return res.redirect("/admin/addProducts");
+            } else {
+                const newProduct = new Product({
+                    productName: productName,
+                    description: description,
+                    regularPrice: regularPrice,
+                    salePrice: salePrice,
+                    createdOn: new Date(),
+                    quantity: quantity,
+                    color: color,
+                    productImage: images,
+                    status: 'Available', // Fixed typo here
+                });
+                await newProduct.save();
+
+            return res.redirect("/admin/addProducts");
+            }
+            
         } else {
             return res.status(400).json({ error: "Product already exists, please try with another name" });
         }
@@ -139,10 +151,36 @@ const unblockProduct = async (req,res) => {
     }
 }
 
+const getEditProduct = async (req,res) => {
+    try {
+        const id= req.query.id;
+        const product =await Product.findOne({_id:id});
+        const existingCategory = await Category.findOne({_id:product.category});
+        const category = await Category.find({isListed:true});
+        // console.log(productCategory.name);
+        if(existingCategory){
+            res.render("edit-product",{
+                product:product,
+                pcat:existingCategory,
+                cat:category
+            })
+        } else {
+            res.render("edit-product",{
+                product:product,
+                cat:category
+            })
+        }
+        
+    } catch (error) {
+        res.redirect("/admin/page-error")
+    }
+}
+
 module.exports = {
     getProductAddPage,
     addProducts,
     getAllProducts,
     blockProduct,
-    unblockProduct
+    unblockProduct,
+    getEditProduct,
 };

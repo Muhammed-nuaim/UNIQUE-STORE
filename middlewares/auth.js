@@ -20,19 +20,22 @@ const userAuth = (req,res,next) => {
     }
 }
 
-const adminAuth = (req,res,next) => {
-    User.findOne ({isAdmin:true})
-    .then(data => {
-        if(data){
+const adminAuth = async (req,res,next) => {
+   try {
+    if(req.session.admin){
+        const admin= await User.findOne({isAdmin:true});
+        if(admin) {
             next()
         } else {
-            res.redirect("/admin/login")
+         res.redirect("/admin/login")
         }
-    })
-    .catch (error => {
-        console.log("Error in admin Authentication middlewate",error)
-        res.status(500).send("Internal Server Error")
-    })
+    } else {
+        res.redirect("/admin/login")
+    }
+
+   } catch (error) {
+    
+   }
 }
 
 module.exports = {

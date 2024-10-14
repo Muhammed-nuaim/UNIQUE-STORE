@@ -33,7 +33,12 @@
             <% for(let i= data.length-1;i>=0;i--) { %>
             <tr>
                 <td><%= data[i].productName %> </td>
-                <td><%= data[i].category.name %></td>
+                
+                <% if(data[i].category){ %>
+                    <td><%= data[i].category.name %></td>
+                <% } else { %>
+                    <td>no Category</td>
+                <% } %>
                 <td><%= data[i].salePrice %></td>
                 <td>
                 
@@ -63,7 +68,7 @@
                 </td>
                 <td>
                     <button class="btn btn-info" style="width: 80px;">
-                        <a href="" class="text-white" style="text-decoration: none;">Edit</a>
+                        <a href="/admin/editProduct?id=<%=data[i]._id %>" class="text-white" style="text-decoration: none;">Edit</a>
                     </button>
                 </td>
             </tr>
@@ -98,3 +103,4 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <%- include('../layouts/admin/footer.ejs') %>
+

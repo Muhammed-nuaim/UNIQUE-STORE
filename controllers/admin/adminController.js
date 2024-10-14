@@ -28,7 +28,7 @@ const login = async (req,res) => {
         if(admin) {   
             const passwrodMatch =await  bcrypt.compare(password,admin.password)
             if (passwrodMatch) {
-                req.session.admin =await  true;
+                req.session.admin =  true;
                 return res.redirect ("/admin")
             } else {
                 return res.redirect("/admin/login")
@@ -38,7 +38,7 @@ const login = async (req,res) => {
         }
     } catch (error) {
         console.log ("login error".error)
-        return res.redirect("/page-error")
+        return res.redirect("/admin/page-error")
     }
 }
 
@@ -47,23 +47,22 @@ const loadDashboard = async (req,res) => {
         try {
             res.render('dashboard')
         } catch (error) {
-            res.redirect("/page-error")
+            res.redirect("/admin/page-error")
         }
     }
 }
 
 const logout = async (req,res) => {
     try {
-        req.session.destroy(err => {
-            if(err) {
-                console.log("Error destoying session",err)
-                return res.redirect ("/page-error")
-            }
+        req.session.admin = false
+        if(req.session.admin){
+            res.redirect("/admin/page-error")
+        } else{
             res.redirect("/admin/login")
-        })
+        }
     } catch (error) {
         console.log("unexpected error during logout",error)
-        res.redirect("/page-error")
+        res.redirect("/admin/page-error")
     }
 }
     

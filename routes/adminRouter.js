@@ -42,7 +42,7 @@ admin_route.post("/addProducts", adminAuth, uploads.array("images", 4), productC
 admin_route.get("/products",adminAuth,productController.getAllProducts);
 admin_route.get("/blockProduct",adminAuth,productController.blockProduct);
 admin_route.get("/unblockProduct",adminAuth,productController.unblockProduct)
-
+admin_route.get("/editProduct",adminAuth,productController.getEditProduct)
 
 
 module.exports = admin_route;
