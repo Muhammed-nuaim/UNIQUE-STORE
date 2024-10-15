@@ -155,26 +155,106 @@ const getEditProduct = async (req,res) => {
     try {
         const id= req.query.id;
         const product =await Product.findOne({_id:id});
-        const existingCategory = await Category.findOne({_id:product.category});
+        const existingCategory = await Category.findOne({_id:product.category,isListed:true});
         const category = await Category.find({isListed:true});
         // console.log(productCategory.name);
-        if(existingCategory){
-            res.render("edit-product",{
-                product:product,
-                pcat:existingCategory,
-                cat:category
-            })
-        } else {
-            res.render("edit-product",{
-                product:product,
-                cat:category
-            })
-        }
+        res.render("edit-product",{
+            product:product,
+            pcat:existingCategory,
+            cat:category
+        })
         
     } catch (error) {
         res.redirect("/admin/page-error")
     }
 }
+
+const editProduct = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        // Check if the product exists
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found." });
+        }
+
+        const data = req.body;
+
+        // Check if product name already exists (excluding the current product)
+        const existingProduct = await Product.findOne({
+            productName: data.productName,
+            _id: { $ne: id }
+        });
+        if (existingProduct) {
+            return res.status(400).json({ error: "Product name already exists. Please try another name." });
+        }
+
+        const images = [];
+        if (req.files && req.files.length > 0) {
+            req.files.forEach(file => {
+                images.push(file.filename);
+            });
+        }
+
+        // Prepare fields to update
+        const updateFields = {
+            productName: data.productName,  // Fixed typo here
+            description: data.description,
+            category: product.category,    // Using existing category if not updated
+            regularPrice: data.regularPrice,
+            salePrice: data.salePrice,
+            quantity: data.quantity,
+            color: data.color
+        };
+
+        // Append new images if available
+        if (images.length > 0) {
+            updateFields.$push = { productImage: { $each: images } };
+        }
+
+        // Perform the update
+        await Product.findByIdAndUpdate(id, updateFields, { new: true });
+
+        res.redirect("/admin/products");
+
+    } catch (error) {
+        console.error("Error updating product:", error.message);
+        res.redirect("/admin/page-error");
+    }
+};
+
+
+
+const deleteSingleImage = async (req, res) => {
+    try {
+        const { imageNameToServer, productIdServer } = req.body;
+
+        // Update the product by removing the image from the array
+        await Product.findByIdAndUpdate(productIdServer, {
+            $pull: { productImage: imageNameToServer }
+        });
+
+        // Path to the image to be deleted
+        const imagePath = path.join("public", "uploads", "re-image", imageNameToServer);
+        
+        // Check if the image exists and then delete it
+        if (fs.existsSync(imagePath)) {
+            await fs.unlinkSync(imagePath);
+            console.log(`Image ${imageNameToServer} deleted successfully.`);
+        } else {
+            console.log(`Image ${imageNameToServer} not found.`);
+        }
+
+        res.send({ status: true });
+
+    } catch (error) {
+        console.error("Error deleting image:", error.message);
+        res.redirect("/admin/page-error");
+    }
+};
+
+
 
 module.exports = {
     getProductAddPage,
@@ -183,4 +263,6 @@ module.exports = {
     blockProduct,
     unblockProduct,
     getEditProduct,
+    editProduct,
+    deleteSingleImage
 };

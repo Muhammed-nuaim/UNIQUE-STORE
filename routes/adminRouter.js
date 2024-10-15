@@ -41,8 +41,10 @@ admin_route.get("/addProducts", adminAuth, productController.getProductAddPage);
 admin_route.post("/addProducts", adminAuth, uploads.array("images", 4), productController.addProducts); // Ensure the route uses uploads
 admin_route.get("/products",adminAuth,productController.getAllProducts);
 admin_route.get("/blockProduct",adminAuth,productController.blockProduct);
-admin_route.get("/unblockProduct",adminAuth,productController.unblockProduct)
-admin_route.get("/editProduct",adminAuth,productController.getEditProduct)
+admin_route.get("/unblockProduct",adminAuth,productController.unblockProduct);
+admin_route.get("/editProduct",adminAuth,productController.getEditProduct);
+admin_route.post("/editProduct/:id",adminAuth, uploads.array("images", 4),productController.editProduct)
+admin_route.post("/deleteImage",adminAuth,productController.deleteSingleImage);
 
 
 module.exports = admin_route;

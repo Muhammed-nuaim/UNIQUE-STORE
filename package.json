@@ -5,6 +5,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "express-session": "^1.18.0",
+    "method-override": "^3.0.0",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0",
     "mongosh": "^2.3.1",
