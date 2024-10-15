@@ -172,49 +172,34 @@ const getEditProduct = async (req,res) => {
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
-
-        // Check if the product exists
         const product = await Product.findById(id);
+
         if (!product) {
             return res.status(404).json({ error: "Product not found." });
         }
 
         const data = req.body;
+        const newImages = req.files.map(file => file.filename); // Array of new uploaded image filenames
 
-        // Check if product name already exists (excluding the current product)
-        const existingProduct = await Product.findOne({
-            productName: data.productName,
-            _id: { $ne: id }
-        });
-        if (existingProduct) {
-            return res.status(400).json({ error: "Product name already exists. Please try another name." });
-        }
-
-        const images = [];
-        if (req.files && req.files.length > 0) {
-            req.files.forEach(file => {
-                images.push(file.filename);
-            });
-        }
-
-        // Prepare fields to update
+        // Update fields
         const updateFields = {
-            productName: data.productName,  // Fixed typo here
+            productName: data.productName,
             description: data.description,
-            category: product.category,    // Using existing category if not updated
             regularPrice: data.regularPrice,
             salePrice: data.salePrice,
             quantity: data.quantity,
-            color: data.color
+            color: data.color,
         };
 
-        // Append new images if available
-        if (images.length > 0) {
-            updateFields.$push = { productImage: { $each: images } };
+        // Update images if new ones are uploaded (we handle max 4 images)
+        for (let i = 0; i < 4; i++) {
+            if (newImages[i]) {
+                product.productImage[i] = newImages[i]; // Replace the image at index i
+            }
         }
 
-        // Perform the update
         await Product.findByIdAndUpdate(id, updateFields, { new: true });
+        await product.save(); // Save the updated product with new images
 
         res.redirect("/admin/products");
 
@@ -223,6 +208,7 @@ const editProduct = async (req, res) => {
         res.redirect("/admin/page-error");
     }
 };
+
 
 
 
