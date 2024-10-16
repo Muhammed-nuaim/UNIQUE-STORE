@@ -74,8 +74,128 @@
                                 </div>
                             </div>
                         </div>
-
                         
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row gx-2">
+                                    <div class="col-sm-6 mb-3">
+                                        <label class="form-label">Category</label>
+                                        <select class="form-select border" name="category">
+                                            <% cat.forEach(category => { %>
+                                                <option value="<%= category.name %>"><%= category.name %></option>
+                                            <% }) %>
+                                        </select>
+                                        <div id="category-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Preview and Upload Section -->
+                        <div class="card mb-2">
+                            <div class="card-header">
+                                <h4>Choose images</h4>
+                            </div>
+                                <div class="row">
+                                    <!-- Image 1 -->
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="input1" class="form-label">Image 1</label>
+                                        <input class="form-control" type="file" name="images" id="input1" accept="image/png, image/jpeg, image/jpg"
+                                            onchange="viewImage(event, 1)">
+                                        <div id="imgPreview1" class="mt-2">
+                                            <% if(product.productImage[0]) { %>
+                                                <img src="/uploads/re-image/<%=product.productImage[0] %>" alt="" id="imgView1" >
+                                                <i onclick="deleteSingleImage('<%=product.productImage[0]%>','<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x">x</i>
+                                                <% } else { %>
+                                                   <img src="" alt="" id="imgView1" style="display: none;">
+                                               <% } %>
+                                        </div>
+                                        <div id="croppedImageContainer1" class="image-cropper mt-2" style="display:none;">
+                                            <img src="" id="croppedImg1" alt="">
+                                            <button type="button" id="saveButton1" class="btn-sm btn-primary">Save Cropped</button>
+                                        </div>
+                                        <div id="images-error" class="error-message"></div>
+                                    </div>
+     
+                                    <!-- Add similar blocks for Image 2, 3, and 4 -->
+                                    <!-- Image 2 -->
+                                    <div class="col-lg-6 mb-4">
+                                        <label for="input2" class="form-label">Image 2</label>
+                                        <input class="form-control" type="file" name="images" id="input2" accept="image/png, image/jpeg, image/jpg"
+                                            onchange="viewImage(event, 2)">
+                                        <div id="imgPreview2" class="mt-2">
+                                            <% if(product.productImage[1]) { %>
+                                                <img src="/uploads/re-image/<%=product.productImage[1] %>" alt="" id="imgView2" >
+                                                <i onclick="deleteSingleImage('<%=product.productImage[1]%>','<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x">x</i>
+                                                <% } else { %>
+                                                   <img src="" alt="" id="imgView2" style="display: none;">
+                                               <% } %>
+                                        </div>
+                                        <div id="croppedImageContainer2" class="image-cropper mt-2" style="display:none;">
+                                            <img src="" id="croppedImg2" alt="">
+                                            <button type="button" id="saveButton2" class="btn-sm btn-primary">Save Cropped</button>
+                                        </div>
+                                        <div id="images-error" class="error-message"></div>
+                                    </div>
+     
+                                    <div class="col-lg-6 mb-4">
+                                     <label for="input3" class="form-label">Image 3</label>
+                                     <input class="form-control" type="file" name="images" id="input3" accept="image/png, image/jpeg, image/jpg"
+                                         onchange="viewImage(event, 3)">
+                                     <div id="imgPreview3" class="mt-2">
+                                        <% if(product.productImage[2]) { %>
+                                         <img src="/uploads/re-image/<%=product.productImage[2] %>" alt="" id="imgView3" >
+                                         <i onclick="deleteSingleImage('<%=product.productImage[2]%>','<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x">x</i>
+                                         <% } else { %>
+                                            <img src="" alt="" id="imgView3" style="display: none;">
+                                        <% } %>
+                                     </div>
+                                     <div id="croppedImageContainer3" class="image-cropper mt-2" style="display:none;">
+                                         <img src="" id="croppedImg3" alt="">
+                                         <button type="button" id="saveButton3" class="btn-sm btn-primary">Save Cropped</button>
+                                     </div>
+                                     <div id="images-error" class="error-message"></div>
+                                 </div>
+     
+                                 <div class="col-lg-6 mb-4">
+                                     <label for="input4" class="form-label">Image 4</label>
+                                     <input class="form-control" type="file" name="images" id="input4" accept="image/png, image/jpeg, image/jpg"
+                                         onchange="viewImage(event, 4)">
+                                     <div id="imgPreview4" class="mt-2">
+                                        <% if(product.productImage[3]) { %>
+                                            <img src="/uploads/re-image/<%=product.productImage[3] %>" alt="" id="imgView4" >
+                                            <i onclick="deleteSingleImage('<%=product.productImage[3]%>','<%=product._id%>')" style="position: absolute; margin-left: .5rem; cursor: pointer;" class="fa-thin fa-x">x</i>
+                                            <% } else { %>
+                                               <img src="" alt="" id="imgView4" style="display: none;">
+                                           <% } %>
+                                     </div>
+                                     <div id="croppedImageContainer4" class="image-cropper mt-2" style="display:none;">
+                                         <img src="" id="croppedImg4" alt="">
+                                         <button type="button" id="saveButton4" class="btn-sm btn-primary">Save Cropped</button>
+                                     </div>
+                                     <div id="images-error" class="error-message"></div>
+                                 </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div>
+
+
+                            <button class="btn btn-md rounded font-sm hover-up" id="updatebtn"
+                                type="submit"  onclick="validateAndSubmit()">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+</section>
+<script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+
+<%- include('../layouts/admin/footer.ejs') %>
 
 <script>
 
@@ -90,57 +210,77 @@
     
     
     function validateForm() {
-       let imageDatas = false
-               console.log("validate form");
-               clearErrorMessages();
-               const name = document.getElementsByName('productName')[0].value;
-               const description = document.getElementsByName('description')[0].value;
-               const price = document.getElementsByName('regularPrice')[0].value;
-               const saleprice = document.getElementsByName('salePrice')[0].value;
-               const color = document.getElementsByName('color')[0].value;
-               const category = document.getElementsByName('category')[0].value;
-               const images = document.getElementById('input1')
-               const quantity=document.getElementsByName('quantity')
-    imageDatas = document.getElementById("imageDatas")?.value;
-               let isValid = true;    
-               if (name.trim() === "") {
-       displayErrorMessage('productName-error', 'Please enter a product name.');
-       isValid = false;
+    let isValid = true;
+    clearErrorMessages();
+    
+    const name = document.getElementsByName('productName')[0].value;
+    const description = document.getElementsByName('description')[0].value;
+    const price = document.getElementsByName('regularPrice')[0].value;
+    const saleprice = document.getElementsByName('salePrice')[0].value;
+    const color = document.getElementsByName('color')[0].value;
+    const category = document.getElementsByName('category')[0].value;
+    const quantity = document.getElementsByName('quantity')[0].value;
+    
+    // Check for existing images
+    const existingImages = document.querySelectorAll('[id^="imgView"]');
+    let hasExistingImages = false;
+    
+    existingImages.forEach(img => {
+        if (img.src && !img.src.endsWith('undefined') && img.style.display !== 'none') {
+            hasExistingImages = true;
+        }
+    });
+
+    // Validation checks
+    if (name.trim() === "") {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
     }
-              
-               if (description=== '') {
-                   displayErrorMessage('description-error', 'Please enter a product description.');
-                   isValid = false;
-               } 
     
-    
-               if ( parseInt(quantity) < 0) {
-                   displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                   isValid = false;
-               }
-    
-    
-    
-    
-               if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                   displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-                   isValid = false;
-               }
-              if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                   displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                   isValid = false;
-               }
-              
-               if (color.trim() === "") {
-                   displayErrorMessage('color-error', 'Please enter a color.');
-                   isValid = false;
-               }
-               if (!imageDatas && images.files.length === 0) {
-                   displayErrorMessage("images-error",'Please select an image.');
-                   isValid = false;
-               }
-               return isValid;
-           }
+    if (description === '') {
+        displayErrorMessage('description-error', 'Please enter a product description.');
+        isValid = false;
+    }
+
+    if (parseInt(quantity) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+
+    if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+
+    if (color.trim() === "") {
+        displayErrorMessage('color-error', 'Please enter a color.');
+        isValid = false;
+    }
+
+    // Only validate images if there are no existing images
+    if (!hasExistingImages) {
+        const newImages = document.querySelectorAll('input[type="file"][name="images"]');
+        let hasNewImages = false;
+        
+        newImages.forEach(input => {
+            if (input.files && input.files.length > 0) {
+                hasNewImages = true;
+            }
+        });
+
+        if (!hasNewImages) {
+            displayErrorMessage("images-error", 'Please select at least one image.');
+            isValid = false;
+        }
+    }
+
+    return isValid;
+}
           
            function displayErrorMessage(elementId, message) {
                var errorElement = document.getElementById(elementId);
