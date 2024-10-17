@@ -26,5 +26,8 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@iconify/json": "^2.2.261"
+  }
 }

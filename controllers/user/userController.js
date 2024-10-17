@@ -1,4 +1,6 @@
 const User = require("../../models/userModel");
+const Category = require("../../models/CategoryModel");
+const Product = require("../../models/productModel")
 const bcrypt = require("bcrypt");
 const nodeMailer = require("nodemailer");
 
@@ -15,11 +17,19 @@ const pageNotFound = async (req, res) => {
 const loadHomePage = async (req, res) => {
     try {
         const user = req.session.user;
+        const Categories = await Category.find({isListed:true});
+        let productData = await Product.find(
+            {isBlocked:false,
+            category:{$in:Categories.map(category => category._id)},quantity:{$gt:0}
+            })
+
+            productData.sort((a,b) => new Date(b.createdOn)-new Date(a.createdOn))
+            productData = productData.slice(0,8)
+
         if (user) {
-            // User data is already in the session, no need to query the database again
-            res.render("home", { user });
+            res.render("home", { user, products: productData });
         } else {
-            return res.render('home');
+            return res.render('home',{products:productData});
         }
     } catch (error) {
         console.log("Home page is not found", error);
