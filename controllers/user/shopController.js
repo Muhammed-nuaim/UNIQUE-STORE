@@ -6,9 +6,20 @@ const getProductDetais = async (req,res) => {
     try {
     const id = req.query.id
     const user = req.session.user;
-    res.render("product-detail",{ user })
+
+    const product = await Product.findOne({_id:id})
+    const category = await Category.findOne({_id:product.category})
+    const size = await Product.find({size:product.size})
+    console.log(size);
+    
+    if(product) {
+        res.render("product-detail",{ user , product , category , size})
+    } else {
+        res.render("page-404")
+    }
+    
     } catch (error) {
-        
+        res.render("page-404")
     }
 }
 
@@ -20,7 +31,7 @@ const shoppingPage = async (req,res) => {
             {isBlocked:false,
             category:{$in:Categories.map(category => category._id)},quantity:{$gt:0}
             })
-
+            
             productData.sort((a,b) => new Date(b.createdOn)-new Date(a.createdOn))
             productData = productData.slice(0,16)
 

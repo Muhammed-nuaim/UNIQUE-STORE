@@ -21,7 +21,7 @@ const categorySchema = new Schema ({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
 })
 
 const Category = mongoose.model("Category",categorySchema)

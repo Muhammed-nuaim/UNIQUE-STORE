@@ -41,6 +41,12 @@
                             <div id="description-error" class="error-message"></div>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="form-label">Full Specification</label>
+                            <textarea placeholder="Type here" id="specificationid" name="specification" class="form-control border" rows="4"><%= product.specification %></textarea>
+                            <div id="specification-error" class="error-message"></div>
+                        </div>
+
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="mb-4">
@@ -68,9 +74,13 @@
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="mb-4">
-                                    <label class="form-label">Color</label>
-                                    <input name="color" type="text" class="form-control border" value="<%= product.color %>">
-                                    <div id="color-error" class="error-message"></div>
+                                    <label class="form-label">size</label>
+                                    <select class="form-select border" name="size">
+                                        <option value="1:12">1:12</option>
+                                        <option value="1:12">1:16</option>
+                                        <option value="1:12">1:18</option>
+                                </select>
+                                    <div id="size-error" class="error-message"></div>
                                 </div>
                             </div>
                         </div>
@@ -215,9 +225,10 @@
     
     const name = document.getElementsByName('productName')[0].value;
     const description = document.getElementsByName('description')[0].value;
+    const specification = document.getElementsByName('specification')[0].value;
     const price = document.getElementsByName('regularPrice')[0].value;
     const saleprice = document.getElementsByName('salePrice')[0].value;
-    const color = document.getElementsByName('color')[0].value;
+    const size = document.getElementsByName('size')[0].value;
     const category = document.getElementsByName('category')[0].value;
     const quantity = document.getElementsByName('quantity')[0].value;
     
@@ -237,10 +248,15 @@
         isValid = false;
     }
     
-    if (description === '') {
+    if (description.trim() === '') {
         displayErrorMessage('description-error', 'Please enter a product description.');
         isValid = false;
     }
+
+    if (specification.trim() === '') {
+        displayErrorMessage('specification-error', 'Please enter a product specification.');
+        isValid = false;
+    } 
 
     if (parseInt(quantity) < 0) {
         displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
@@ -257,8 +273,8 @@
         isValid = false;
     }
 
-    if (color.trim() === "") {
-        displayErrorMessage('color-error', 'Please enter a color.');
+    if (size.trim() === "") {
+        displayErrorMessage('size-error', 'Please enter a size.');
         isValid = false;
     }
 

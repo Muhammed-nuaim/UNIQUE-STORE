@@ -21,7 +21,7 @@ const getProductAddPage = async (req, res) => {
 // Add a new product
 const addProducts = async (req, res) => {
     try {
-        const {productName,description,regularPrice,salePrice,quantity,color,category}= req.body;
+        const {productName,description,specification,regularPrice,salePrice,quantity,size,category}= req.body;
 
         // Check if the product already exists
         const productExists = await Product.findOne({
@@ -56,12 +56,13 @@ const addProducts = async (req, res) => {
             const newProduct = new Product({
                 productName: productName,
                 description: description,
+                specification: specification,
                 category: categoryId._id,
                 regularPrice: regularPrice,
                 salePrice: salePrice,
                 createdOn: new Date(),
                 quantity: quantity,
-                color: color,
+                size: size,
                 productImage: images,
                 status: 'Available', // Fixed typo here
             });
@@ -200,10 +201,11 @@ const editProduct = async (req, res) => {
             productName: data.productName,
             category: category._id,
             description: data.description,
+            specification: data.specification,
             regularPrice: data.regularPrice,
             salePrice: data.salePrice,
             quantity: data.quantity,
-            color: data.color,
+            size: data.size,
         };
 
         // Handle image updates
