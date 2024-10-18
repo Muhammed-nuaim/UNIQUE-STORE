@@ -20,7 +20,7 @@ const loadHomePage = async (req, res) => {
         const Categories = await Category.find({isListed:true});
         let productData = await Product.find(
             {isBlocked:false,
-            category:{$in:Categories.map(category => category._id)},quantity:{$gt:0}
+            category:{$in:Categories.map(category => category._id)}
             })
 
             productData.sort((a,b) => new Date(b.createdOn)-new Date(a.createdOn))

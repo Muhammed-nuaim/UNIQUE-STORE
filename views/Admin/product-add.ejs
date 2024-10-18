@@ -185,80 +185,123 @@
 <script>
 
 
-    function validateAndSubmit() {
-    if (validateForm()) {
-       document.forms[0].submit();
-    }
-    }
+function validateForm() {
+    let isValid = true;
+    clearErrorMessages();
     
+    // Get form elements using getElementById instead of getElementsByName
+    const name = document.getElementById('product_name').value;
+    const description = document.getElementById('descriptionid').value;
+    const specification = document.getElementById('specificationid').value;
+    const price = document.getElementsByName('regularPrice')[0].value;
+    const saleprice = document.getElementsByName('salePrice')[0].value;
+    const size = document.getElementsByName('size')[0].value;
+    const quantity = document.getElementsByName('quantity')[0].value;
     
-    
-    
-    function validateForm() {
-       let imageDatas = false
-               console.log("validate form");
-               clearErrorMessages();
-               const name = document.getElementsByName('productName')[0].value;
-               const description = document.getElementsByName('description')[0].value;
-               const specification = document.getElementsByName('specification')[0].value;
-               const price = document.getElementsByName('regularPrice')[0].value;
-               const saleprice = document.getElementsByName('salePrice')[0].value;
-               const size = document.getElementsByName('size')[0].value;
-               const category = document.getElementsByName('category')[0].value;
-               const images = document.getElementById('input1')
-               const quantity=document.getElementsByName('quantity')
-    imageDatas = document.getElementById("imageDatas")?.value;
-               let isValid = true;    
-               if (name.trim() === "") {
-       displayErrorMessage('productName-error', 'Please enter a product name.');
-       isValid = false;
-    }
-              
-               if (description.trim() === '') {
-                   displayErrorMessage('description-error', 'Please enter a product description.');
-                   isValid = false;
-               } 
+    // Debug logs - remove these after testing
+    console.log('Description value:', description);
+    console.log('Description element:', document.getElementById('descriptionid'));
 
-               if (specification.trim() === '') {
-                   displayErrorMessage('specification-error', 'Please enter a product specification.');
-                   isValid = false;
-               } 
+    // Check for existing images (for edit page)
+    const existingImages = document.querySelectorAll('[id^="imgView"]');
+    let hasExistingImages = false;
     
+    existingImages.forEach(img => {
+        if (img.src && !img.src.endsWith('undefined') && img.style.display !== 'none') {
+            hasExistingImages = true;
+        }
+    });
+
+    // Required field validations with trimmed values and proper length checks
+    if (!name || name.trim().length === 0) {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
+    }
     
-               if ( parseInt(quantity) < 0) {
-                   displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                   isValid = false;
-               }
+    // Description validation with proper null check and trim
+    if (!description || description.toString().trim().length === 0) {
+        displayErrorMessage('description-error', 'Please enter a product description.');
+        isValid = false;
+    }
+
+    // Specification validation with proper null check and trim
+    if (!specification || specification.toString().trim().length === 0) {
+        displayErrorMessage('specification-error', 'Please enter a product specification.');
+        isValid = false;
+    }
+
+    // Numeric validations with proper type checking
+    if (!quantity || isNaN(quantity) || parseInt(quantity) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+    }
+
+    if (!price || !/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
+        isValid = false;
+    }
+
+    if (!saleprice || !/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid non-negative sale price.');
+        isValid = false;
+    }
+
+    if (!size || size.trim().length === 0) {
+        displayErrorMessage('size-error', 'Please select a size.');
+        isValid = false;
+    }
+
+    // Image validation
+    if (!hasExistingImages) {
+        const newImages = document.querySelectorAll('input[type="file"][name="images"]');
+        let hasNewImages = false;
+        
+        newImages.forEach(input => {
+            if (input.files && input.files.length > 0) {
+                hasNewImages = true;
+            }
+        });
+
+        if (!hasNewImages) {
+            displayErrorMessage("images-error", 'Please select at least one image.');
+            isValid = false;
+        }
+    }
+
+    return isValid;
+}
+
+function validateAndSubmit(event) {
+    // Prevent the default form submission
+    if (event) {
+        event.preventDefault();
+    }
     
+    // Perform validation
+    if (validateForm()) {
+        // If validation passes, submit the form
+        document.forms[0].submit();
+    }
     
-    
-    
-               if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-                   displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-                   isValid = false;
-               }
-              if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-                   displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-                   isValid = false;
-               }
-              
-               if (size.trim() === "") {
-                   displayErrorMessage('size-error', 'Please enter a size.');
-                   isValid = false;
-               }
-               if (!imageDatas && images.files.length === 0) {
-                   displayErrorMessage("images-error",'Please select an image.');
-                   isValid = false;
-               }
-               return isValid;
-           }
-          
-           function displayErrorMessage(elementId, message) {
-               var errorElement = document.getElementById(elementId);
-               errorElement.innerText = message;
-               errorElement.style.display = "block";
-           }
-    
+    // Return false to prevent default form submission
+    return false;
+}
+
+function displayErrorMessage(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.innerText = message;
+        errorElement.style.display = "block";
+    }
+}
+
+function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName('error-message');
+    Array.from(errorElements).forEach(element => {
+        element.innerText = '';
+        element.style.display = 'none';
+    });
+}
     
            function clearErrorMessages() {
                const errorElements = document.getElementsByClassName('error-message');
