@@ -10,7 +10,6 @@ const getProductDetais = async (req,res) => {
     const product = await Product.findOne({_id:id})
     const category = await Category.findOne({_id:product.category})
     const size = await Product.find({size:product.size})
-    console.log(size);
     
     if(product) {
         res.render("product-detail",{ user , product , category , size})

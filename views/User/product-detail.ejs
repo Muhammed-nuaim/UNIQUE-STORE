@@ -34,17 +34,17 @@
 							<div class="slick3 gallery-lb">
 								<% for (let i=0 ;i < product.productImage.length ; i++) { %>
 								<div class="item-slick3" data-thumb="/uploads/re-image/<%=product.productImage[i] %>">
-									<div class="wrap-pic-w pos-relative">
-										<img src="/uploads/re-image/<%=product.productImage[i] %>" alt="IMG-PRODUCT">
-
+									<div class="wrap-pic-w pos-relative ">
+										<div class="img-magnifier-container">
+										<img id="img-<%=i%>" src="/uploads/re-image/<%=product.productImage[i] %>" width="600" height="400" alt="IMG-PRODUCT">
+										</div>
 										<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="/uploads/re-image/<%=product.productImage[i] %>">
 											<i class="fa fa-expand"></i>
 										</a>
 									</div>
 								</div>
-
 								<% } %>
-							</div>
+							</div>	
 						</div>
 					</div>
 				</div>
@@ -70,7 +70,13 @@
 								</tr>
 								<tr>
 									<td><%=product.size %></td>
-									<td class="text text-danger">Stock:<%= product.quantity > 0 ? product.quantity : "Out of stock" %></td>
+									<td>
+										<% if(product.quantity > 0) { %>
+											<%= product.quantity %>
+										<% } else {%>
+											<p class="text text-danger">Out of stock</p>
+										<% } %>
+									</td>
 									<td><%=category.name %></td>
 								</tr>
 							</table>
@@ -533,6 +539,12 @@
 		</div>
 	</section>
 		
-
+	
 	<!-- Footer -->
 	<%- include('../layouts/user/footer.ejs') %>
+	<script>
+		magnify("img-0", 3);
+		magnify("img-1", 3);
+		magnify("img-2", 3);
+		magnify("img-3", 3);
+	</script>
