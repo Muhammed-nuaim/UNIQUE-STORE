@@ -4,16 +4,13 @@
     <div class="row justify-content-center">
         <div class="col-md-6 mt-60">
             <form id="categoryForm" method="post" action="/admin/editCategory/<%=category._id%>" onsubmit="return handleFormSubmit(event)">
-                <%if(locals.message && message.length > 0){ %>
-                    <div class="alert alert-danger text-center"><%=message%></div>
-                <% } %>
                 <div class="d-grid text-end mt-30 col-md-5">
                     <button class="btn btn-primary" type="submit">Update category</button>
                 </div>
                 <div class="mb-4 mt-30">
                     <label for="category_name" class="form-label">Name</label>
                     <input type="text" name="categoryName" value="<%= category.name %>" class="form-control border" />
-                    <div id="categoryame-error" class="error-message text-danger"></div>
+                    <div id="categoryName-error" class="error-message text-danger"></div>
                 </div>
                 
                 <div class="mb-4">
@@ -48,21 +45,24 @@
     body: JSON.stringify({ categoryName, description }),
 })
 .then(response => {
-    console.log("Response Status:", response.status);  // Log response status
-    if (!response.ok) {
-        return response.json().then(err => {
-            throw new Error(err.error);
-        });
-    }
-    return response.json();
-})
-.then(data => {
-    console.log("Success Data:", data);  // Log the success response
-    window.location.href = "/admin/category";  // Redirect to the category list page
-})
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.error);
+            });
+        } else {
+            Swal.fire({
+                icon: 'Success',
+                title: "Success",
+                text: "Categoty is Successfully Updated"
+            }).then(() => {
+                window.location.href = "/admin/category";
+                });
+        }
+        return response.json()
+    })
 .catch(error => {
     console.log("Error:", error.message);  // Log the error message
-    if (error.message === "Category exists, please choose another name") {
+    if (error.message === "Category exists, please choose another name.") {
         Swal.fire({
             icon: 'error',
             title: "Oops!",

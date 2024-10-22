@@ -12,7 +12,18 @@ const getProductDetais = async (req,res) => {
     const size = await Product.find({size:product.size})
     
     if(product) {
-        res.render("product-detail",{ user , product , category , size})
+        if(user){
+            const verifyuser = await User.findOne({_id:user.id,isBlocked:false})
+            if(verifyuser){
+                res.render("product-detail",{ user , product , category , size})
+            }else {
+                req.session.user = false
+                res.render("product-detail",{ product , category , size})
+            }
+        } else {
+            res.render("product-detail",{ product , category , size})
+        }
+        
     } else {
         res.render("page-404")
     }
@@ -35,7 +46,14 @@ const shoppingPage = async (req,res) => {
             productData = productData.slice(0,16)
 
             if (user) {
+            const verifyuser = await User.findOne({_id:user.id,isBlocked:false})
+                if(verifyuser){
                 res.render("product", { user , products: productData });
+                } else {
+                    req.session.user = false
+                return res.render("product",{products:productData});
+
+                }
             } else {
                 return res.render("product",{products:productData});
             }

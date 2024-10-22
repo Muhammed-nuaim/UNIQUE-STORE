@@ -17,6 +17,7 @@ const pageNotFound = async (req, res) => {
 const loadHomePage = async (req, res) => {
     try {
         const user = req.session.user;
+        
         const Categories = await Category.find({isListed:true});
         let productData = await Product.find(
             {isBlocked:false,
@@ -27,7 +28,13 @@ const loadHomePage = async (req, res) => {
             productData = productData.slice(0,8)
 
         if (user) {
-            res.render("home", { user, products: productData });
+            const verifyuser = await User.findOne({_id:user.id,isBlocked:false})
+            if(verifyuser){
+                res.render("home", { user, products: productData });
+            } else {
+                req.session.user = false
+                return res.render('home',{products:productData});
+            }
         } else {
             return res.render('home',{products:productData});
         }
@@ -132,7 +139,7 @@ const loadLogin = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const findUser = await User.findOne({ isAdmin: 0, email });
+        const findUser = await User.findOne({ email });
 
         if (!findUser) {
             return res.render('login', { message: "User not found" });
@@ -221,13 +228,10 @@ const resendOtp = async (req, res) => {
 // Logout the user
 const logout = async (req, res) => {
     try {
-        req.session.destroy((err) => {
-            if (err) {
-                console.log("Session destruction error", err.message);
-                return res.redirect("/pageNotFound");
-            }
-            return res.redirect('/login');
-        });
+        req.session.user = null;
+        if(!req.session.user){
+        res.redirect("/")
+        }
     } catch (error) {
         console.log("Logout error", error);
         res.redirect("/pageNotFound");

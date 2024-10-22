@@ -2,23 +2,23 @@ const User = require("../models/userModel")
 
 
 const userAuth = (req,res,next) => {
+    try {
     if(req.session.user){
-        User.findById(req.session.user)
-        .then (data => {
-            if (data && !data.isBlocked) {
+        const user = User.findOne({_id:req.session.user.id,isBlocked:false})
+            if (user) {
                 next()
             } else {
                 res.redirect("/login")
             }
-        })
-        .catch(error => {
+        } else {
+            res.redirect("/login")
+        }
+    }
+         catch(error) {
             console.log("Error in user authentication middlewate",error);
             res.status(500).send("Inter Server error")
-        })
-    } else {
-        res.redirect("/login")
+        }
     }
-}
 
 const adminAuth = async (req,res,next) => {
    try {

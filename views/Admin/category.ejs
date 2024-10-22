@@ -75,9 +75,13 @@
                                             <a href="/admin/editCategory?id=<%= category._id %>" class="btn btn-info text-white">Edit</a>
                                         </td>
                                         <td class="text-center">
-                                            <button class="btn btn-danger" style="width: 90px" onclick="return confirmDelete()">
-                                                <a href="/admin/deleteCategory?id=<%= category._id %>" class="text-white">Delete</a>
-                                            </button>
+                                            <td class="text-center">
+                                                <button class="btn btn-danger" style="width: 90px" 
+                                                  onclick="confirmDelete('<%= category._id %>')">
+                                                  <span class="text-white">Delete</span>
+                                                </button>
+                                              </td>
+                                              
                                         </td>
                                         <td class="text-end">
                                             <div class="dropdown">
@@ -148,27 +152,29 @@
     })
     .then(response => {
         if (!response.ok) {
-            // If the response is not OK, throw an error to handle it in the catch block
             return response.json().then(err => {
                 throw new Error(err.error);
             });
+        } else {
+            Swal.fire({
+                icon: 'Success',
+                title: "Success",
+                text: "Categoty is Successfully added"
+            }).then(() => {
+                    location.reload();
+                });
         }
-        return response.json();
+        return response.json()
     })
-    .then(data => {
-        // If the request was successful, reload the page
-        location.reload();
-    })
+    
     .catch(error => {
         if (error.message === "Category already exists") {
-            // Display the error message using SweetAlert for duplicates
             Swal.fire({
                 icon: 'error',
                 title: "Oops!",
                 text: "Category already exists.",
             });
         } else {
-            // Display any other errors that occur
             Swal.fire({
                 icon: "error",
                 title: "Oops!",
@@ -218,9 +224,25 @@
         });
     }
 
-    function confirmDelete() {
-        return confirm ("Are you sure you want to delete this Category?")
+    function confirmDelete(categoryId) {
+  Swal.fire({
+    title: "Are you sure you want to delete this Category?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Delete",
+    denyButtonText: `Don't Delete`
+  }).then((result) => {
+    if (result.isConfirmed) {
+        Swal.fire("Category is deleted succesfully")
+     .then(()=>{
+        window.location.href = `/admin/deleteCategory?id=${categoryId}`;
+     }) 
+    } else if (result.isDenied) {
+      Swal.fire("Category is not deleted");
     }
+  });
+}
+
 </script>
 
 <%- include('../layouts/admin/footer.ejs') %>

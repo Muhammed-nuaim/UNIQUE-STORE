@@ -84,10 +84,13 @@ const editCategory = async (req, res) => {
         const { categoryName, description } = req.body;
 
         // Check if the category already exists
-        const existingCategory = await Category.findOne({ name: categoryName });
-
+        const givenCategory = await Category.findOne({_id:id });
+        const existingCategory = await Category.findOne({name:categoryName})
+        
         if (existingCategory) {
-            return res.status(400).json({ error: "Category exists, please choose another name" });
+            if(existingCategory.name !== givenCategory.name){
+                return res.status(400).json({ error: "Category exists, please choose another name." });
+            } 
         }
 
         // Update the category
@@ -98,7 +101,7 @@ const editCategory = async (req, res) => {
 
         if (updateCategory) {
             // Send a successful response
-            res.status(200).json({ message: "Category updated successfully" }); // <--- Make sure this is sent
+            res.status(200).json({ message: "Category updated successfully" });
         } else {
             res.status(404).json({ error: "Category not found" });
         }

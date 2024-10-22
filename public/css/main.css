@@ -1937,13 +1937,19 @@ input.num-product::-webkit-inner-spin-button {
 }
 
 .table-shopping-cart .column-4 {
-  width: 145px;
-  text-align: right;
+  width: 120px;
+  font-size: 16px;
+  text-align: center;
 }
 
 .table-shopping-cart .column-5 {
+  width: 145px;
+  text-align: center;
+}
+
+.table-shopping-cart .column-6 {
   width: 172px;
-  padding-right: 50px;
+  padding-right: 40px;
   text-align: right;
   font-size: 16px;
 }

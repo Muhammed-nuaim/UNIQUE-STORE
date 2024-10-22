@@ -4,6 +4,8 @@ const passport = require("passport");
 const userController = require("../controllers/user/userController");
 const profileController = require("../controllers/user/profileController")
 const shopController = require("../controllers/user/shopController")
+const whishlistController = require("../controllers/user/whishlistController")
+const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Error Management
 user_route.get('/pageNotFound', userController.pageNotFound);
@@ -36,4 +38,11 @@ user_route.post("/reset-password",profileController.newPassword);
 //shop Management
 user_route.get("/productDetails",shopController.getProductDetais);
 user_route.get("/shopping",shopController.shoppingPage)
+
+
+//Whishlist Management
+user_route.post("/addWhishlist",whishlistController.addWhishlist);
+user_route.get("/whishlist",userAuth,whishlistController.loadWhishlist)
+
+
 module.exports = user_route;
