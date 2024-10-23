@@ -4,47 +4,57 @@ const Category = require ("../../models/CategoryModel")
 const Whishlist = require ("../../models/whishlistModel")
 
 
-const addWhishlist = async (req,res) => {
+const addWhishlist = async (req, res) => {
     try {
-        const id = req.body.id
-        const user = req.session.user;
+        const id = req.body.id; 
+        const user = req.session.user;  
         
+        const existingWhishlist = await Whishlist.findOne({ userId: user.id });
+        const existingProduct = await Product.findById({ _id: id });
         
-        const existingUser = await User.findOne({_id:user.id,isBlocked:false})
+        const verifyProduct = existingWhishlist?.productId.includes(existingProduct._id);
         
-        const existingProduct = await Product.findById({_id:id})
-        
-        if(existingProduct && existingUser) {
-            const newWhishlist =  new Whishlist ({
-                userId: existingUser._id,
-                productId:existingProduct._id
-            })
-            await newWhishlist.save()
-            console.log(newWhishlist);
+        if (existingWhishlist) {
+            if (verifyProduct) {
+                await Whishlist.updateOne(
+                    { userId: user.id }, 
+                    { $pull: { productId: existingProduct._id } }
+                );
+                
+                res.status(200).json({ success: false, message: "Product removed from wishlist" ,favourite: false});
+            } else {
+                await Whishlist.updateOne(
+                    { userId: user.id }, 
+                    { $push: { productId: existingProduct._id } }
+                );
+                
+                res.status(200).json({ success: true, message: "Product added to wishlist" ,favourite: true});
+            }
+        } else if (existingProduct) {
+            const newWhishlist = new Whishlist({
+                userId: user.id,
+                productId: [existingProduct._id]
+            });
             
-            res.status(200).json({ success: true});
+            await newWhishlist.save();
+            res.status(200).json({ success: true, message: "Product added to new wishlist" ,favourite: true});
         }
-        else {
-            res.status(400).json({ success: false});
-        }
-
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Server error' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+};
 
 const loadWhishlist = async (req,res) => {
     try {
         const user = req.session.user
-        const existingUser = await User.findOne({_id:user.id,isBlocked:false})
-        const existingWhishlist = await Whishlist.find({userId:existingUser._id})
-        const whishlistData = await Product.find({_id:{$in:existingWhishlist.map(hi => hi.productId)}})
+
+        const existingWhishlist = await Whishlist.findOne({userId:user.id}) 
+        const whishlistData = await Product.find({_id:{$in:existingWhishlist.productId.map(id => id)}})
         
-        
-        if(existingUser && existingWhishlist) {
+        if(existingWhishlist) {
             return res.render('whishlist',{user , product:whishlistData})
         }
-        else if(existingUser) {
+        else {
             res.render('whishlist',{user})
         }
 
