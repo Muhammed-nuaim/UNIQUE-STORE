@@ -59,13 +59,36 @@ const loadWhishlist = async (req,res) => {
         }
 
     } catch (error) {
-        console.log("shopping page is not found", error);
-        res.status(500).send("Server error");
+        console.log("Whishlist page is not found", error);
+        res.status(404).send("Server error");
+    }
+}
+
+const removeWhishlist = async (req,res) => {
+    try {
+        const id = req.body.id;
+        const user = req.session.user;
+        
+        const whishlistData = await Whishlist.findOne({productId:id})
+
+        if(whishlistData) {
+             await Whishlist.updateOne(
+                { userId: user.id }, 
+                { $pull: { productId: id } }
+            );
+            
+            res.status(200).json({ success: true, message: "Product removed from wishlist"});
+        } else {
+            res.status(200).json({success: false , message: "Product remove an error accured"})
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 }
 
 
 module.exports = {
     addWhishlist,
-    loadWhishlist
+    loadWhishlist,
+    removeWhishlist
 }

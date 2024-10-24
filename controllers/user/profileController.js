@@ -3,6 +3,9 @@ const nodemailer = require ("nodemailer");
 const bcrypt = require ('bcrypt')
 const env = require ("dotenv").config();
 const session = require ("express-session");
+const Address = require("../../models/addressModel");
+const Wishlist = require("../../models/whishlistModel");
+const Product = require("../../models/productModel");
 
 
 function generateOtp() {
@@ -163,11 +166,70 @@ const newPassword = async (req,res) => {
     }
 }
 
+const userProfile = async (req,res) => {
+    try {
+        const user = req.session.user;
+
+        const existingUser = await User.findOne({_id:user.id});
+        const existingAddress = await Address.findOne({userId:existingUser._id})
+        const existingWhishlist = await Wishlist.findOne({userId:existingUser._id})
+        const whishlistProducts = await Product.find({_id:{$in:existingWhishlist.productId.map(id => id)}})
+ 
+        if(existingUser && !existingAddress && !existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , user})
+        } else if(existingAddress && existingUser && !existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses , user})
+        } else if(!existingAddress && existingUser && existingWhishlist) {
+            res.render('userProfile', {userData:existingUser ,whishlistData:whishlistProducts , user})
+        } else if(existingAddress && existingUser && existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses ,whishlistData:whishlistProducts , user})
+        }
+    } catch (error) {
+        res.status(500).json({success:false,message:"An error occured. Please try again"});
+    }
+}
+
+const updateProfile = async (req,res) => {
+    try {
+        const id = req.body.id;
+        const name = req.body.username;
+        const user = req.session.user;
+        
+        console.log(user);
+        
+        const existingUser = await User.findOne({_id:id});
+        const verifyUser = await User.findOne({_id:user.id});
+
+        if(existingUser && verifyUser) {
+            const updateProfile = await User.updateOne(
+                {_id:existingUser._id},{name:name}
+            )
+
+            if(updateProfile) {
+
+                const updatedUser = await User.findOne({_id:existingUser._id})
+                req.session.user.name = updatedUser.name
+                res.json({success:true,message:"Updated Profile Successfully"});
+
+            }
+
+            } else {
+
+                res.json({success:false,message:"Updated Profile have some problem"});
+                
+            }
+    } catch (error) {
+        res.status(500).json({success:false,message:"An error occured. Please try again"});
+    }
+}
+
 module.exports = {
     getForgotPassPage,
     forgotEmailValid,
     verifyForgotPassOtp,
     resendOtp,
     getResetPassPage,
-    newPassword
+    newPassword,
+    userProfile,
+    updateProfile
 }

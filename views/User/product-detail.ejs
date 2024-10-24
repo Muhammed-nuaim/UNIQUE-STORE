@@ -71,10 +71,12 @@
 								<tr>
 									<td><%=product.size %></td>
 									<td>
-										<% if(product.quantity > 0) { %>
-											<%= product.quantity %>
+										<% if(product.quantity > 10) { %>
+											<p class="text text-dark"><%=product.quantity %> </p>
+										<% } else if(product.quantity > 0){%>
+											<p class="text text-danger">Only <%=product.quantity %> Stock !</p>
 										<% } else {%>
-											<p class="text text-danger">Out of stock</p>
+											<p class="text text-danger">Out of stock !</p>
 										<% } %>
 									</td>
 									<td><%=category.name %></td>

@@ -5,6 +5,7 @@ const userController = require("../controllers/user/userController");
 const profileController = require("../controllers/user/profileController")
 const shopController = require("../controllers/user/shopController")
 const whishlistController = require("../controllers/user/whishlistController")
+const addressController = require("../controllers/user/addressController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Error Management
@@ -34,6 +35,11 @@ user_route.post("/forgot-pass-verify-otp",profileController.verifyForgotPassOtp)
 user_route.post("/forgot-resend-otp",profileController.resendOtp);
 user_route.get("/reset-password",profileController.getResetPassPage);
 user_route.post("/reset-password",profileController.newPassword);
+user_route.get("/userProfile",userAuth,profileController.userProfile);
+user_route.put("/updateProfile",userAuth,profileController.updateProfile);
+
+//address Management
+user_route.post("/addAddress",userAuth,addressController.addAddress);
 
 //shop Management
 user_route.get("/productDetails",shopController.getProductDetais);
@@ -41,8 +47,9 @@ user_route.get("/shopping",shopController.shoppingPage)
 
 
 //Whishlist Management
-user_route.post("/addWhishlist",whishlistController.addWhishlist);
-user_route.get("/whishlist",userAuth,whishlistController.loadWhishlist)
+user_route.post("/addWhishlist",userAuth,whishlistController.addWhishlist);
+user_route.get("/whishlist",userAuth,whishlistController.loadWhishlist);
+user_route.delete("/removeWhishlist",userAuth,whishlistController.removeWhishlist);
 
 
 module.exports = user_route;
