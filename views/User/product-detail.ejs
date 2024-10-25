@@ -97,7 +97,7 @@
 										</div>
 									</div>
 
-									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
+									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail" onclick="addToCart('<%=product._id %>')">
 										Add to cart
 									</button>
 								</div>
@@ -388,6 +388,42 @@
 		  });
 		}
 	  });
+	}
+
+	//addToCart
+	function addToCart(id) {
+		$.ajax({
+			url: "/addToCart",
+			type: "POST",
+			data: JSON.stringify({
+				id:id
+			}),
+			contentType: "application/json",
+			success: function (res) {
+				if(res.success) {
+					Swal.fire({
+						icon:"success",
+						title:"Success",
+						text: res.message,
+					})
+				} else {
+					Swal.fire({
+						icon:"error",
+						title:"Error",
+						text: res.message,
+					})
+				}
+			},
+			error: function () {
+		  		Swal.fire({
+					icon: "error",
+					title: "Oops!",
+					text: "An error occurred. Please login.",
+		  		}).then((result) => {
+					window.location.href = '/login';
+		  		});
+			}
+		})
 	}
   </script>
   

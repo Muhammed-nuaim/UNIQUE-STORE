@@ -6,6 +6,7 @@ const profileController = require("../controllers/user/profileController")
 const shopController = require("../controllers/user/shopController")
 const whishlistController = require("../controllers/user/whishlistController")
 const addressController = require("../controllers/user/addressController")
+const cartController = require("../controllers/user/cartController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Error Management
@@ -40,6 +41,9 @@ user_route.put("/updateProfile",userAuth,profileController.updateProfile);
 
 //address Management
 user_route.post("/addAddress",userAuth,addressController.addAddress);
+user_route.get("/editAddress",userAuth,addressController.editAddress);
+user_route.put("/updateAddress/:id",userAuth,addressController.updateAddress);
+user_route.delete("/deleteAddress",userAuth,addressController.deleteAddress);
 
 //shop Management
 user_route.get("/productDetails",shopController.getProductDetais);
@@ -50,6 +54,11 @@ user_route.get("/shopping",shopController.shoppingPage)
 user_route.post("/addWhishlist",userAuth,whishlistController.addWhishlist);
 user_route.get("/whishlist",userAuth,whishlistController.loadWhishlist);
 user_route.delete("/removeWhishlist",userAuth,whishlistController.removeWhishlist);
+
+//Cart Management
+user_route.get("/cartPage",userAuth,cartController.loadCartPage);
+user_route.post("/addToCart",userAuth,cartController.addToCart);
+user_route.delete("/removeCart",userAuth,cartController.removeCart);
 
 
 module.exports = user_route;
