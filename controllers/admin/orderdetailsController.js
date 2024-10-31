@@ -13,7 +13,7 @@ const getOrderList = async(req,res) => {
             res.render("order-list",{orderList:false})
         }
     } catch (error) {
-        
+        res.status(500).send("Internal Server Error");
     }
 }
 
@@ -22,7 +22,7 @@ const getOrderDetails = async(req,res) => {
     try {
         const id = req.query.id
 
-        const orderDetails = await Order.findOne({_id:id})
+        const orderDetails = await Order.findOne({_id:id}).populate("orderedItems.productId","address")
 
         if(orderDetails) {
           res.render("order-details",{orderDetails})
@@ -30,11 +30,66 @@ const getOrderDetails = async(req,res) => {
             res.redirect("/admin/page-error")
         }
     } catch (error) {
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+const updateStatus = async (req,res) => {
+    try {
+        const {orderId , status} = req.body
         
+        if(orderId,status) {
+            await Order.updateOne(
+                {_id:orderId},
+                {status:status}
+            )
+        res.status(200).json({success:true});
+        } else {
+            res.status(201).json({success:false});
+        }
+    } catch (error) {
+        res.status(500).send("Internal Server Error");
+    }
+}
+
+const productCancelled = async (req,res) => {
+    try {
+        const {orderId,id} = req.body
+
+        const order = await Order.findOne({_id:orderId,"orderedItems._id":id}).populate("orderedItems","address")
+        const product = order.orderedItems.find(item => item._id == id)
+       
+        if(order && product) {
+            await Order.updateOne(
+                {_id:orderId,"orderedItems._id":id},
+                { $set:{"orderedItems.$.cancelled":true}}
+            )
+            const orderDetails = order.orderedItems.find(item => item.cancelled==false )
+            if(orderDetails){
+                await Product.updateOne(
+                    {_id:product.productId},
+                    {$inc: {quantity:product.quantity}}
+                )
+            res.status(200).json({success:1})
+            } else {
+                await Product.updateOne(
+                    {_id:product.productId},
+                    {$inc: {quantity:product.quantity}}
+                )
+                res.status(200).json({success:2})
+            }
+        } else {
+            res.status(200).json({success:false})
+        }
+        
+    } catch (error) {
+        res.status(500).send("Internal Server Error");
     }
 }
 
 module.exports = {
     getOrderList,
     getOrderDetails,
+    updateStatus,
+    productCancelled
 }

@@ -38,6 +38,10 @@ const orderSchema = new Schema ({
             type:Number,
             required: true
         },
+        cancelled: {
+            type:Boolean,
+            default:false
+        },
         status: {
         type: String,
         required: true,
@@ -91,6 +95,10 @@ const orderSchema = new Schema ({
     finalAmount: {
         type: Number,
         required: true
+    },
+    cancelled: {
+        type:Boolean,
+        default:false
     },
     invoiceDate: {
         type: Date
