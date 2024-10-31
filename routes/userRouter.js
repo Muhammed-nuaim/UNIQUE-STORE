@@ -7,6 +7,7 @@ const shopController = require("../controllers/user/shopController")
 const whishlistController = require("../controllers/user/whishlistController")
 const addressController = require("../controllers/user/addressController")
 const cartController = require("../controllers/user/cartController")
+const checkoutController = require("../controllers/user/checkoutController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Error Management
@@ -58,7 +59,14 @@ user_route.delete("/removeWhishlist",userAuth,whishlistController.removeWhishlis
 //Cart Management
 user_route.get("/cartPage",userAuth,cartController.loadCartPage);
 user_route.post("/addToCart",userAuth,cartController.addToCart);
-user_route.delete("/removeCart",userAuth,cartController.removeCart);
+user_route.delete("/removeCart-item",userAuth,cartController.removeCart);
+user_route.post("/decrementQuantity",userAuth,cartController.decrementQuantity);
+user_route.post("/incrementQuantity",userAuth,cartController.incrementQuantity);
+
+//orderManagement
+user_route.get("/checkout",userAuth,checkoutController.loadCheckout);
+user_route.post("/order/success",userAuth,checkoutController.saveOrder);
+user_route.get("/order-success",userAuth,checkoutController.orderSuccess);
 
 
 module.exports = user_route;

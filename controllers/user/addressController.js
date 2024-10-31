@@ -121,8 +121,6 @@ const deleteAddress = async (req,res) => {
         const existingAddress = await Address.findOne({userId:existingUser._id,"addresses._id" : id})
 
         if(existingAddress) {
-            console.log("hihi");
-            
             await Address.updateOne(
                 {userId:existingUser._id},
                 {$pull:{addresses:{_id:id}}}

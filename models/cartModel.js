@@ -7,6 +7,10 @@ const cartSchema = new Schema ({
         ref: "User",
         required: true
     },
+    subTotal: {
+        type: Number,
+        required: true
+    },
     items: [{
         productId: {
             type: Schema.Types.ObjectId,
@@ -24,7 +28,7 @@ const cartSchema = new Schema ({
         totalPrice: {
             type: Number,
             required: true
-        }
+        },
     }]
 })
 

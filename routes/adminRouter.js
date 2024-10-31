@@ -5,6 +5,7 @@ const customerController = require("../controllers/admin/customerController");
 const adminController = require("../controllers/admin/adminController");
 const categoryController = require("../controllers/admin/categoryController");
 const productController = require("../controllers/admin/productController");
+const orderdetailsController = require("../controllers/admin/orderdetailsController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Configure Multer for file uploads
@@ -45,6 +46,10 @@ admin_route.get("/unblockProduct",adminAuth,productController.unblockProduct);
 admin_route.get("/editProduct",adminAuth,productController.getEditProduct);
 admin_route.post("/editProduct/:id",adminAuth, uploads.array("images", 4),productController.editProduct)
 admin_route.post("/deleteImage",adminAuth,productController.deleteSingleImage);
+
+//Order Management
+admin_route.get("/orderList",adminAuth,orderdetailsController.getOrderList);
+admin_route.get("/orderDetails",adminAuth,orderdetailsController.getOrderDetails);
 
 
 module.exports = admin_route;

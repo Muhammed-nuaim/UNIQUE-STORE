@@ -1,0 +1,201 @@
+<%- include('../layouts/user/header.ejs') %>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <div class="container">
+            <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+                <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+                    Home
+                    <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+                </a>
+    
+                <span class="stext-109 cl4">
+                    Shoping Cart
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Product Section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <table class="table-shopping-cart">
+                            <tr class="table_head">
+                                <th class="column-1">Image</th>
+                                <th class="column-2">Product Name</th>
+                                <th class="column-3">Price</th>
+                                <th class="column-4">Quantity</th>
+                                <th class="column-5">Total</th>
+                            </tr>
+                            <% for ( i = 0 ; i < cartData.length ; i++) {%>
+                                <tr class="table_row">
+                                    <td class="column-1">
+                                        <div class="how-itemcart1">
+                                            <img src="/uploads/re-image/<%= cartData[i].productId.productImage[0] %>" alt="IMG">
+                                        </div>
+                                    </td>
+                                    <td class="column-2"><%= cartData[i].productId.productName %></td>
+                                    <td class="column-3">₹<%= cartData[i].price %></td>
+                                    <td class="column-4"><%= cartData[i].Quantity %></td>
+                                    <td class="column-5">₹<%= cartData[i].totalPrice %></td>
+                                </tr>
+                            <% } %>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title mb-0">Select Delivery Address</h5>
+                        </div>
+                        
+                        <div class="border rounded p-3 mb-3">
+                            <div class="form-check">
+                                <div class="card-content">
+                                    <% for(let i=0 ; i<addressData.length ; i++) { %>
+                                    <div class="space-y-4">
+                                    <div class="border rounded p-4">
+                                        <div class="flex justify-between items-start">
+                                    <input class="form-check-input" type="radio" name="address" id="<%=addressData[i]._id %>" checked>
+                                    <label class="form-check-label" for="<%=addressData[i]._id %>">
+                                        <div>
+                                            <p class="font-semibold"><%= addressData[i].addressType %></p>
+                                            <p class="text-sm text-muted-foreground"><%= addressData[i].landMark %>, <%= addressData[i].city %>, <%= addressData[i].state %>,<%= addressData[i].pincode %></p>
+                                        </div>
+                                    </label>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Payment Method</h5>
+                        <p class="text-muted small mb-4">Select any payment method</p>
+                        
+                        <div class="border rounded p-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="Debit Card / Credit card" checked>
+                                <label class="form-check-label" for="Debit Card / Credit card">Debit Card / Credit card</label>
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="UPI Method">
+                                <label class="form-check-label" for="UPI Method">UPI Method</label>
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-3 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="Cash on Delivery">
+                                <label class="form-check-label" for="Cash on Delivery">Cash on Delivery</label>
+                            </div>
+                        </div>
+
+                        <div class="border rounded p-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment" id="Wallet">
+                                <label class="form-check-label" for="Wallet">Wallet</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Cart Total</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>items(<%= cartData.length %>)</span>
+                            <span>₹<%=cart.subTotal %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 text-success">
+                            <span>Delivery Charge </span>
+                            <span>FREE</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>TOTAL</strong>
+                            <strong>₹<%=cart.subTotal %></strong>
+                        </div>
+                        <button id="confirmOrderBtn" class="btn btn-dark w-100 mb-3">CONFIRM TO ORDER</button>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Enter your Coupon code">
+                            <button class="btn btn-outline-secondary">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <%- include('../layouts/user/footer.ejs') %>
+
+    <script>
+        // Wait for the DOM to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Select the confirm order button by its ID
+            const confirmOrderBtn = document.getElementById("confirmOrderBtn");
+
+            // Add a click event listener to the button
+            confirmOrderBtn.addEventListener("click", function () {
+                // Get selected address ID
+                const selectedAddress = document.querySelector('input[name="address"]:checked')?.id;
+
+                // Get selected payment method ID
+                const selectedPaymentMethod = document.querySelector('input[name="payment"]:checked')?.id;
+
+                // Check if both address and payment method are selected
+                if (!selectedAddress || !selectedPaymentMethod) {
+                    alert("Please select both an address and a payment method.");
+                    return; // Stop the function if either is missing
+                }
+
+                // Prepare data to send
+                const orderData = {
+                    addressId: selectedAddress,
+                    paymentMethod: selectedPaymentMethod,
+                };
+
+                // Use AJAX (fetch) to send data to the backend route
+                fetch('/order/success', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(orderData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "/order-success";
+                    } else {
+                        alert("Error placing order. Please try again.");
+                    }
+                })
+                .catch((error) => console.error('Error:', error));
+            });
+        });
+
+
+    </script>

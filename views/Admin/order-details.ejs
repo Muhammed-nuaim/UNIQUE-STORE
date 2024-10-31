@@ -1,0 +1,132 @@
+<%- include('../layouts/admin/header.ejs') %>
+<script src="https://cdn.tailwindcss.com"></script>
+  <div class="container mx-auto p-4">
+      <div class="flex justify-between items-center mb-6">
+          <div>
+              <h1 class="text-2xl font-bold">Order Detail</h1>
+              <p class="text-gray-600">Details for Order ID: 3453012</p>
+          </div>
+          <div class="flex items-center space-x-2">
+              <select class="border rounded p-2">
+                  <option>Change status</option>
+                  <option>Awaiting payment</option>
+                  <option>Confirmed</option>
+                  <option>Shipped</option>
+                  <option>Delivered</option>
+              </select>
+              <button class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+              <button class="border border-gray-300 px-4 py-2 rounded">Print</button>
+          </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div class="bg-white p-4 rounded shadow">
+              <h2 class="text-lg font-semibold mb-2">Customer</h2>
+              <p>John Alexander</p>
+              <p>john@example.com</p>
+              <p>+998 99 22123456</p>
+              <a href="#" class="text-blue-500">View profile</a>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow">
+              <h2 class="text-lg font-semibold mb-2">Order Info</h2>
+              <p>Shipping: Fargo express</p>
+              <p>Pay method: card</p>
+              <p>Status: Awaiting payment</p>
+              <a href="#" class="text-blue-500">Download info</a>
+          </div>
+
+          <div class="bg-white p-4 rounded shadow">
+              <h2 class="text-lg font-semibold mb-2">Deliver to</h2>
+              <p>City: Tashkent, Uzbekistan</p>
+              <p>Block A, House 123, Floor 2</p>
+              <p>Po Box 10000</p>
+          </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-2">
+              <div class="bg-white p-4 rounded shadow">
+                  <h2 class="text-lg font-semibold mb-4">Order Items</h2>
+                  <table class="w-full">
+                      <thead>
+                          <tr class="border-b">
+                              <th class="text-left p-2">Image</th>
+                              <th class="text-left p-2">Product</th>
+                              <th class="text-right p-2">Unit Price</th>
+                              <th class="text-right p-2">Quantity</th>
+                              <th class="text-right p-2">Total</th>
+                              <th class="text-center p-2">Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr class="border-b">
+                              <td class="p-2">
+                                  <img src="/placeholder.svg?height=50&width=50" alt="T-shirt blue" class="w-12 h-12 object-cover rounded">
+                              </td>
+                              <td class="p-2">T-shirt blue, XXL size</td>
+                              <td class="text-right p-2">$44.25</td>
+                              <td class="text-right p-2">2</td>
+                              <td class="text-right p-2">$88.50</td>
+                              <td class="text-center p-2">
+                                  <select class="border rounded p-1 w-full">
+                                      <option value="processing">Processing</option>
+                                      <option value="pending">Pending</option>
+                                      <option value="shipped">Shipped</option>
+                                      <option value="delivered">Delivered</option>
+                                      <option value="cancelled">Cancelled</option>
+                                  </select>
+                              </td>
+                          </tr>
+                          <tr class="border-b">
+                              <td class="p-2">
+                                  <img src="/placeholder.svg?height=50&width=50" alt="Winter jacket" class="w-12 h-12 object-cover rounded">
+                              </td>
+                              <td class="p-2">Winter jacket for men</td>
+                              <td class="text-right p-2">$120.50</td>
+                              <td class="text-right p-2">1</td>
+                              <td class="text-right p-2">$120.50</td>
+                              <td class="text-center p-2">
+                                  <select class="border rounded p-1 w-full">
+                                      <option value="processing">Processing</option>
+                                      <option value="pending">Pending</option>
+                                      <option value="shipped">Shipped</option>
+                                      <option value="delivered">Delivered</option>
+                                      <option value="cancelled">Cancelled</option>
+                                  </select>
+                              </td>
+                          </tr>
+                      </tbody>
+                      <tfoot>
+                          <tr class="font-bold">
+                              <td colspan="4" class="text-right p-2">Subtotal:</td>
+                              <td class="text-right p-2">$209.00</td>
+                              <td></td>
+                          </tr>
+                          <tr>
+                              <td colspan="4" class="text-right p-2">Shipping:</td>
+                              <td class="text-right p-2">$10.00</td>
+                              <td></td>
+                          </tr>
+                          <tr class="font-bold text-lg">
+                              <td colspan="4" class="text-right p-2">Total:</td>
+                              <td class="text-right p-2">$219.00</td>
+                              <td></td>
+                          </tr>
+                      </tfoot>
+                  </table>
+              </div>
+          </div>
+
+          <div>
+              <div class="bg-white p-4 rounded shadow">
+                  <h2 class="text-lg font-semibold mb-2">Payment Info</h2>
+                  <p class="mb-2">Payment Method: Credit Card</p>
+                  <p class="mb-2">Payment Status: Paid</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+<%- include('../layouts/admin/footer.ejs') %>
