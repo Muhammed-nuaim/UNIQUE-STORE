@@ -56,9 +56,23 @@
                                     <td><%= orderList[i].finalAmount %></td>
                                     <td><span class="badge rounded-pill alert-warning"><%= orderList[i].status %></span></td>
                                     <td><%= new Date(orderList[i].createdOn).toDateString() %></td>
+                                    <% if (orderList[i].cancelled == false && orderList[i].status != "Delivered" && orderList[i].status != "Shipped" ) { %>
                                     <td class="text-end">
                                         <a href="/admin/orderDetails?id=<%= orderList[i]._id %>" class="btn btn-md rounded font-sm">Detail</a>
                                     </td>
+                                    <% } else if (orderList[i].status == "Shipped") { %>
+                                        <td class="text-end text-warning">
+                                            Order Shipped
+                                        </td>
+                                    <% } else if (orderList[i].status == "Delivered") {%>
+                                        <td class="text-end text-success">
+                                            Order Delivered
+                                        </td>
+                                    <% } else { %>
+                                        <td class="text-end text-danger">
+                                            Order Cancelled
+                                        </td>
+                                    <% } %>
                                 </tr>
                                     <% } %>
                                 <% } %>

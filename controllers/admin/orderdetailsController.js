@@ -43,7 +43,11 @@ const updateStatus = async (req,res) => {
                 {_id:orderId},
                 {status:status}
             )
-        res.status(200).json({success:true});
+            if(status == "Delivered" || status == "Shipped") {
+              res.status(200).json({success:1});
+            } else {
+              res.status(200).json({success:2});
+            }
         } else {
             res.status(201).json({success:false});
         }
@@ -64,17 +68,28 @@ const productCancelled = async (req,res) => {
                 {_id:orderId,"orderedItems._id":id},
                 { $set:{"orderedItems.$.cancelled":true}}
             )
-            const orderDetails = order.orderedItems.find(item => item.cancelled==false )
+            const orderDetails = order.orderedItems.find(item =>{ if (item.cancelled == false) {if(item._id!=id){ return item} }  })
+            
             if(orderDetails){
                 await Product.updateOne(
                     {_id:product.productId},
                     {$inc: {quantity:product.quantity}}
+                )
+                await Order.updateOne(
+                    {_id:orderId,"orderedItems._id":id},
+                    {$inc: {finalAmount: -product.totalPrice}}
                 )
             res.status(200).json({success:1})
             } else {
                 await Product.updateOne(
                     {_id:product.productId},
                     {$inc: {quantity:product.quantity}}
+                )
+                await Order.updateOne(
+                    {_id:orderId},
+                    {cancelled:true,
+                    status:'Cancelled'
+                    }
                 )
                 res.status(200).json({success:2})
             }

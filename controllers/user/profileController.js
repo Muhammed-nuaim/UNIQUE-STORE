@@ -6,6 +6,7 @@ const session = require ("express-session");
 const Address = require("../../models/addressModel");
 const Wishlist = require("../../models/whishlistModel");
 const Product = require("../../models/productModel");
+const Order = require("../../models/orderModel")
 
 
 function generateOtp() {
@@ -174,15 +175,23 @@ const userProfile = async (req,res) => {
         const existingAddress = await Address.findOne({userId:existingUser._id})
         const existingWhishlist = await Wishlist.findOne({userId:existingUser._id})
         const whishlistProducts = await Product.find({_id:{$in:existingWhishlist.productId.map(id => id)}})
+        const existingOrder = await Order.find({userId:existingUser._id}).populate("orderedItems","address")
+
  
-        if(existingUser && !existingAddress && !existingWhishlist) {
+        if(existingUser && !existingAddress && !existingWhishlist && !existingOrder) {
             res.render('userProfile', {userData:existingUser , user})
+        } else if(existingOrder && !existingAddress && existingUser && !existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , orderData:existingOrder, user})
+        } else if(existingOrder && existingAddress && existingUser && !existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses , orderData:existingOrder, user})
+        } else if(existingOrder && !existingAddress && existingUser && existingWhishlist) {
+            res.render('userProfile', {userData:existingUser , whishlistData:whishlistProducts , orderData:existingOrder, user})
         } else if(existingAddress && existingUser && !existingWhishlist) {
             res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses , user})
         } else if(!existingAddress && existingUser && existingWhishlist) {
             res.render('userProfile', {userData:existingUser ,whishlistData:whishlistProducts , user})
-        } else if(existingAddress && existingUser && existingWhishlist) {
-            res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses ,whishlistData:whishlistProducts , user})
+        } else if(existingAddress && existingUser && existingWhishlist && existingOrder) {
+            res.render('userProfile', {userData:existingUser , addressData:existingAddress?.addresses ,whishlistData:whishlistProducts , orderData:existingOrder, user})
         }
     } catch (error) {
         res.status(500).json({success:false,message:"An error occured. Please try again"});

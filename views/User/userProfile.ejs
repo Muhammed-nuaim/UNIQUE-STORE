@@ -19,18 +19,22 @@
             <p class="card-description">View and manage your order history</p>
           </div>
           <div class="card-content">
+            <% for(let i=0 ; i<orderData.length ; i++) { %>
             <div class="space-y-4">
               <div class="flex items-center justify-between p-4 border rounded">
                 <div class="flex items-center space-x-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><circle cx="13" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M4.5 10.5L9 6"/><path d="M20 8v8"/><path d="M15 6.5L18 18"/></svg>
                   <div>
-                    <p class="font-semibold">Order #12345</p>
-                    <p class="text-sm text-muted-foreground">Placed on: 10/24/2024</p>
+                    <p class="font-semibold">Order Id:<%= orderData[i].orderId%></p>
+                    <p class="font-semibold">Name:<%= orderData[i].address[0].name%></p>
+                    <p class="font-semibold">Address:<%= orderData[i].address[0].landMark%>,<%= orderData[i].address[0].city%>,<%= orderData[i].address[0].state%></p>
+                    <p class="font-semibold">Pincode:<%= orderData[i].address[0].pincode%></p>
+                    <p class="font-semibold">Status:<%= orderData[i].status%></p>
                   </div>
                 </div>
-                <button class="btn btn-outline">View Details</button>
+                <a href="/viewOrderDetails?id=<%= orderData[i]._id %>"><button  class="btn btn-outline btn-sm">View Details</button></a>
               </div>
             </div>
+            <% } %>
           </div>
         </div>
       </div>
