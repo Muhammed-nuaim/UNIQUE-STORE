@@ -53,7 +53,6 @@
                               <th class="text-right p-2">Unit Price</th>
                               <th class="text-right p-2">Quantity</th>
                               <th class="text-right p-2">Total</th>
-                              <th class="text-right p-2">Status</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -66,9 +65,6 @@
                               <td class="text-right p-2">₹<%= orderDetails.orderedItems[i].price %></td>
                               <td class="text-right p-2"><%= orderDetails.orderedItems[i].quantity %></td>
                               <td class="text-right p-2">₹<%= orderDetails.orderedItems[i].totalPrice %></td>
-                              <% if (!orderDetails.orderedItems[i].cancelled == true) { %><td class="text-right p-2">
-                                <button class="bg-red-500 text-white px-2 py-2 rounded" onclick="productCancelled('<%= orderDetails._id %>','<%= orderDetails.orderedItems[i]._id%>')">Cancelled</button></td>
-                                <% } else { %> <td class="text-right text-red-500 p-2"> Cancelled <% } %></td>
                           </tr>
                           <% } %>
                       </tbody>
@@ -152,47 +148,4 @@
             }
         })
     }
-
-    function productCancelled(orderId,id) {
-
-Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you want to Cancel this order?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, cancel it!',
-    cancelButtonText: 'Cancel'
-}).then((result) => {
-    if (result.isConfirmed) {
-        // Proceed with AJAX request to update the status
-        $.ajax({
-            url: "/admin/productCancelled",
-            type: "PATCH",
-            contentType: "application/json",
-            data: JSON.stringify({
-                orderId: orderId,
-                id: id
-            }),
-            success: function(response) {
-                if(response.success == 1) {
-                    Swal.fire('Updated!', 'Order has been updated.', 'success').then(() => {
-                        location.reload();
-                    });
-                } else if (response.success == 2) {
-                    Swal.fire('Updated!', 'Order has been updated.', 'success').then(() => {
-                        window.location.href='/userProfile'
-                    });
-                } else {
-                    Swal.fire('Error!', 'Failed to cancell order .', 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error!', 'An error occurred while updating status.', 'error').then(() => {
-                        window.location.href='/login'
-                });
-            }
-        });
-    }
-});
-}
 </script>

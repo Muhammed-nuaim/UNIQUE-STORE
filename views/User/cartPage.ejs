@@ -163,9 +163,9 @@
 function confirmDelete(id) {
         event.preventDefault();
          Swal.fire({
-        title: "Are you sure you want to delete this Product in Cart?",
+        title: "Are you sure you want to remove this Product in Cart?",
         showCancelButton: true,
-        confirmButtonText: "Delete",
+        confirmButtonText: "remove",
   }).then((result) =>{
     if(result.isConfirmed) {
         $.ajax({
@@ -179,7 +179,7 @@ function confirmDelete(id) {
                 if (res.success) {
                     Swal.fire ({
                         icon: "warning",
-                        title: "Delete",
+                        title: "Remove",
                         text: res.message,
                     }).then(() => {
                     location.reload();
@@ -187,7 +187,7 @@ function confirmDelete(id) {
                 } else {
                     Swal.fire ({
                         icon: "error",
-                        title: "Not Delete",
+                        title: "Not Remove",
                         text: res.message,
                     })
                 }

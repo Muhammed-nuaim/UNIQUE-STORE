@@ -54,7 +54,13 @@ const cancellOrder = async(req,res) => {
                 {_id:id},
                 {cancelled:true,status:"Cancelled"}
             )
-
+            const productId = orderDetails.orderedItems.map((item) => item)
+            for(let item of productId) {
+                await Product.updateMany(
+                    {_id:item.productId},
+                    {$inc: {quantity:item.quantity}}
+                )
+            }
             res.status(200).json({success:true,message:"Order Cancelled Successfully"})
         } else {
             res.status(201).json({success:false,message:"Order is Already Shipped"})

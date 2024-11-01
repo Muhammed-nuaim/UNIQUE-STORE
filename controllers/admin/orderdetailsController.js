@@ -37,17 +37,15 @@ const getOrderDetails = async(req,res) => {
 const updateStatus = async (req,res) => {
     try {
         const {orderId , status} = req.body
+
+        const orderDetails = await Order.findOne({_id:orderId})
         
-        if(orderId,status) {
+        if(orderId && status && orderDetails.cancelled !== true) {
             await Order.updateOne(
                 {_id:orderId},
                 {status:status}
             )
-            if(status == "Delivered" || status == "Shipped") {
-              res.status(200).json({success:1});
-            } else {
-              res.status(200).json({success:2});
-            }
+              res.status(200).json({success:true});
         } else {
             res.status(201).json({success:false});
         }
@@ -56,49 +54,32 @@ const updateStatus = async (req,res) => {
     }
 }
 
-const productCancelled = async (req,res) => {
+const cancellOrder = async(req,res) => {
     try {
-        const {orderId,id} = req.body
+        const id = req.body.orderId
 
-        const order = await Order.findOne({_id:orderId,"orderedItems._id":id}).populate("orderedItems","address")
-        const product = order.orderedItems.find(item => item._id == id)
-       
-        if(order && product) {
-            await Order.updateOne(
-                {_id:orderId,"orderedItems._id":id},
-                { $set:{"orderedItems.$.cancelled":true}}
-            )
-            const orderDetails = order.orderedItems.find(item =>{ if (item.cancelled == false) {if(item._id!=id){ return item} }  })
-            
-            if(orderDetails){
-                await Product.updateOne(
-                    {_id:product.productId},
-                    {$inc: {quantity:product.quantity}}
-                )
-                await Order.updateOne(
-                    {_id:orderId,"orderedItems._id":id},
-                    {$inc: {finalAmount: -product.totalPrice}}
-                )
-            res.status(200).json({success:1})
-            } else {
-                await Product.updateOne(
-                    {_id:product.productId},
-                    {$inc: {quantity:product.quantity}}
-                )
-                await Order.updateOne(
-                    {_id:orderId},
-                    {cancelled:true,
-                    status:'Cancelled'
-                    }
-                )
-                res.status(200).json({success:2})
-            }
-        } else {
-            res.status(200).json({success:false})
-        }
+        const orderDetails = await Order.findOne({_id:id})
+        const status = orderDetails.status
         
+        if(orderDetails && status != 'Shipped') {
+            await Order.updateOne(
+                {_id:id},
+                {cancelled:true,status:"Cancelled"}
+            )
+            const productId = orderDetails.orderedItems.map((item) => item)
+        for(let item of productId) {
+            await Product.updateMany(
+                {_id:item.productId},
+                {$inc: {quantity:item.quantity}}
+            )
+        }
+
+            res.status(200).json({success:true,message:"Order Cancelled Successfully"})
+        } else {
+            res.status(201).json({success:false,message:"Order is Already Shipped"})
+        }
     } catch (error) {
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({success:false,error})
     }
 }
 
@@ -106,5 +87,5 @@ module.exports = {
     getOrderList,
     getOrderDetails,
     updateStatus,
-    productCancelled
+    cancellOrder
 }

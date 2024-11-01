@@ -50,6 +50,7 @@ user_route.delete("/deleteAddress",userAuth,addressController.deleteAddress);
 //shop Management
 user_route.get("/productDetails",shopController.getProductDetais);
 user_route.get("/shopping",shopController.shoppingPage)
+user_route.post("/searchRoute",shopController.searchProduct)
 
 
 //Whishlist Management

@@ -9,12 +9,29 @@
           <div class="flex items-center space-x-2">
               <select class="border rounded p-2" id="status">
                   <option><%= orderDetails.status %></option>
+                  <% if (orderDetails.status !== 'Shipped' && orderDetails.status !== 'Delivered' && orderDetails.status !== 'Cancelled') {%>
                   <option>Processing</option>
                   <option>Pending</option>
                   <option>Shipped</option>
                   <option>Delivered</option>
+                  <% } else if (orderDetails.status === 'Shipped') {%>
+                  <option>Delivered</option>
+                  <% } else if (orderDetails.staus === 'Delivered'){ %>
+                  <p>Order Delivered</p>
+                  <% } else { %>
+                  <p>Order Cancelled</p>
+                  <% } %>
               </select>
               <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="updateStatus('<%= orderDetails._id %>')">Save</button>
+              <div class="flex items-center space-x-2">
+                <% if (orderDetails.cancelled == false && orderDetails.status != 'Delivered' ) { %>
+                    <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="cancelledOrder('<%= orderDetails._id %>')">Cancelled</button>
+                <% } else if (orderDetails.status == 'Delivered' ) { %>
+                  <p class="text-green-500  py-2 rounded">Delivered Order</p>
+                <% } else { %>
+                  <p class="text-red-500  py-2 rounded">Cancelled Order</p>
+                <% } %>
+              </div>
               <button class="border border-gray-300 px-4 py-2 rounded">Print</button>
           </div>
       </div>
@@ -55,7 +72,6 @@
                               <th class="text-right p-2">Unit Price</th>
                               <th class="text-right p-2">Quantity</th>
                               <th class="text-right p-2">Total</th>
-                              <th class="text-right p-2">Status</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -68,9 +84,6 @@
                               <td class="text-right p-2">₹<%= orderDetails.orderedItems[i].price %></td>
                               <td class="text-right p-2"><%= orderDetails.orderedItems[i].quantity %></td>
                               <td class="text-right p-2">₹<%= orderDetails.orderedItems[i].totalPrice %></td>
-                              <% if (!orderDetails.orderedItems[i].cancelled == true) { %><td class="text-right p-2">
-                                <button class="bg-red-500 text-white px-2 py-2 rounded" onclick="productCancelled('<%= orderDetails._id %>','<%= orderDetails.orderedItems[i]._id%>')">Cancelled</button></td>
-                                <% } else { %> <td class="text-right text-red-500 p-2"> Cancelled <% } %></td>
                           </tr>
                           <% } %>
                       </tbody>
@@ -128,14 +141,10 @@
                         status: selectedStatus
                     }),
                     success: function(response) {
-                        if(response.success == 2) {
+                        if(response.success) {
                             Swal.fire('Updated!', 'Order status has been updated.', 'success').then(() => {
                                 location.reload(); // Reload the page to show updated status
                             });
-                        } else if (response.success == 1 ) {
-                            Swal.fire('Updated!', 'Order status has been updated.', 'success').then(() => {
-                                window.location.href="/admin/orderList"
-                            })
                         } else {
                             Swal.fire('Error!', 'Failed to update order status.', 'error');
                         }
@@ -148,46 +157,54 @@
         });
     }
 
-    function productCancelled(orderId,id) {
-
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to Cancel this order?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, cancel it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Proceed with AJAX request to update the status
-                $.ajax({
-                    url: "/admin/productCancelled",
-                    type: "PATCH",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        orderId: orderId,
-                        id: id
-                    }),
-                    success: function(response) {
-                        if(response.success == 1) {
-                            Swal.fire('Updated!', 'Order has been updated.', 'success').then(() => {
-                                location.reload();
-                            });
-                        } else if (response.success == 2) {
-                            Swal.fire('Updated!', 'Order has been updated.', 'success').then(() => {
-                                window.location.href='/admin/orderList'
-                            });
-                        } else {
-                            Swal.fire('Error!', 'Failed to cancell order .', 'error');
-                        }
-                    },
-                    error: function() {
-                        Swal.fire('Error!', 'An error occurred while updating status.', 'error').then(() => {
-                                window.location.href='/admin/login'
-                        });
-                    }
-                });
-            }
-        });
-    }
+    function cancelledOrder (orderId) {
+       
+       Swal.fire({
+           title: 'Are you sure?',
+           text: "Do you want to Cancell this order?",
+           icon: 'warning',
+           showCancelButton: true,
+           confirmButtonText: 'Yes!',
+           cancelButtonText: 'Cancel'
+       }).then((result) => {
+           if(result.isConfirmed) {
+               $.ajax({
+                   url: "/admin/cancellOrder",
+                   type: 'PATCH',
+                   contentType: "application/json",
+                   data: JSON.stringify({
+                       orderId
+                   }),
+                   success: function(res) {
+                       if(res.success) {
+                          Swal.fire({
+                           icon:'success',
+                           title:'Canncelled',
+                           text: res.message
+                          }).then(() => {
+                           location.reload();
+                          })
+                       } else {
+                           Swal.fire({
+                               icon:'error',
+                               title:"This Order Doesn't Cancelled",
+                               text: res.message,
+                           }).then(() => {
+                               location.reload();
+                           })
+                       }
+                   },
+                   error: function(error) {
+                       Swal.fire({
+                           icon: "error",
+                           title: "Oops!",
+                           text: error.message || "An error occured"
+                       }).then(() => {
+                           window.location.href = '/admin/login'
+                       })
+                   }
+               })
+           }
+       })
+   }
 </script>

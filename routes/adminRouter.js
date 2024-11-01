@@ -51,7 +51,6 @@ admin_route.post("/deleteImage",adminAuth,productController.deleteSingleImage);
 admin_route.get("/orderList",adminAuth,orderdetailsController.getOrderList);
 admin_route.get("/orderDetails",adminAuth,orderdetailsController.getOrderDetails);
 admin_route.post("/updateStatus",adminAuth,orderdetailsController.updateStatus);
-admin_route.patch("/productCancelled",adminAuth,orderdetailsController.productCancelled);
-
+admin_route.patch("/cancellOrder",adminAuth,orderdetailsController.cancellOrder);
 
 module.exports = admin_route;

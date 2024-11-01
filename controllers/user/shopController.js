@@ -33,38 +33,78 @@ const getProductDetais = async (req,res) => {
     }
 }
 
-const shoppingPage = async (req,res) => {
+const searchProduct = async (req, res) => {
+    try {
+        const search = req.body.value;
+        const searchData = search.trim().replace(/[^a-zA-Z\s]/g, "");
+        
+        if (!searchData) {
+            // If search is empty, return all products
+            const allProducts = await Product.find({ isBlocked: false })
+                .select('productName productImage regularPrice salePrice size')
+                .sort({ createdOn: -1 });
+            return res.json({ products: allProducts });
+        }
+
+        const products = await Product.find({
+            productName: { $regex: new RegExp(searchData, "i") },
+            isBlocked: false
+        }).select('productName productImage regularPrice salePrice size');
+
+        res.json({ products });
+    } catch (error) {
+        console.error("Search error:", error);
+        res.status(500).json({ 
+            error: "Server error",
+            message: error.message 
+        });
+    }
+};
+
+const shoppingPage = async (req, res) => {
     try {
         const user = req.session.user;
-        const Categories = await Category.find({isListed:true});
-        let productData = await Product.find(
-            {isBlocked:false,
-            category:{$in:Categories.map(category => category._id)}
-            })
-            
-            productData.sort((a,b) => new Date(b.createdOn)-new Date(a.createdOn))
-            productData = productData.slice(0,16)
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8;
+        const skip = (page - 1) * limit;
 
-            if (user) {
-            const verifyuser = await User.findOne({_id:user.id,isBlocked:false})
-                if(verifyuser){
-                res.render("product", { user , products: productData });
-                } else {
-                    req.session.user = false
-                return res.render("product",{products:productData});
+        const Categories = await Category.find({ isListed: true });
+        
+        let productData = await Product.find({
+            isBlocked: false,
+            category: { $in: Categories.map(category => category._id) }
+        }).select('productName productImage regularPrice salePrice size createdOn').skip(skip).limit(limit)
 
-                }
+        // Default sort by newest
+        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+        productData = productData
+
+        const totalProducts = await Product.find({
+            isBlocked: false,
+            category: { $in: Categories.map(category => category._id) }
+        }).select('productName productImage regularPrice salePrice size createdOn').countDocuments();
+        const totalPages = Math.ceil(totalProducts / limit);
+
+
+        if (user) {
+            const verifyuser = await User.findOne({ _id: user.id, isBlocked: false });
+            if (verifyuser) {
+                res.render("product", { user, products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts });
             } else {
-                return res.render("product",{products:productData});
+                req.session.user = false;
+                res.render("product", { products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts  });
             }
-
+        } else {
+            res.render("product", { products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts  });
+        }
     } catch (error) {
-        console.log("shopping page is not found", error);
+        console.error("Shopping page error:", error);
         res.status(500).send("Server error");
     }
-}
+};
 
 module.exports = {
     getProductDetais,
-    shoppingPage
-}
+    shoppingPage,
+    searchProduct
+};

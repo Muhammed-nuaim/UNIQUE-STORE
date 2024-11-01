@@ -57,10 +57,10 @@
                                 </td>
                                 <td class="column-6">
                                     <div class="wrap-num-product flex-w m-l-25 m-r-0">
-                                        <button class="btn btn-dark" style="width: 100%" 
+                                        <a class="btn btn-dark" style="width: 100%" 
                                             onclick="addToCart('<%= product[i]._id %>')">
                                             <span class="text-white">Add to Cart</span>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -84,7 +84,7 @@
          Swal.fire({
         title: "Are you sure you want to delete this Product in Whishlist?",
         showCancelButton: true,
-        confirmButtonText: "Delete",
+        confirmButtonText: "Remove",
   }).then((result) =>{
     if(result.isConfirmed) {
         $.ajax({
@@ -98,7 +98,7 @@
                 if (res.success) {
                     Swal.fire ({
                         icon: "warning",
-                        title: "Delete",
+                        title: "Remove",
                         text: res.message,
                     }).then(() => {
                     location.reload();
@@ -122,4 +122,40 @@
 		    }
         })}})
     }
+
+    //addToCart
+    function addToCart(id) {
+		$.ajax({
+			url: "/addToCart",
+			type: "POST",
+			data: JSON.stringify({
+				id:id
+			}),
+			contentType: "application/json",
+			success: function (res) {
+				if(res.success) {
+					Swal.fire({
+						icon:"success",
+						title:"Success",
+						text: res.message,
+					})
+				} else {
+					Swal.fire({
+						icon:"error",
+						title:"Error",
+						text: res.message,
+					})
+				}
+			},
+			error: function () {
+		  		Swal.fire({
+					icon: "error",
+					title: "Oops!",
+					text: "An error occurred. Please login.",
+		  		}).then((result) => {
+					window.location.href = '/login';
+		  		});
+			}
+		})
+	}
 </script>
