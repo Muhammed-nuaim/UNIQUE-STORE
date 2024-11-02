@@ -33,33 +33,6 @@ const getProductDetais = async (req,res) => {
     }
 }
 
-const searchProduct = async (req, res) => {
-    try {
-        const search = req.body.value;
-        const searchData = search.trim().replace(/[^a-zA-Z\s]/g, "");
-        
-        if (!searchData) {
-            // If search is empty, return all products
-            const allProducts = await Product.find({ isBlocked: false })
-                .select('productName productImage regularPrice salePrice size')
-                .sort({ createdOn: -1 });
-            return res.json({ products: allProducts });
-        }
-
-        const products = await Product.find({
-            productName: { $regex: new RegExp(searchData, "i") },
-            isBlocked: false
-        }).select('productName productImage regularPrice salePrice size');
-
-        res.json({ products });
-    } catch (error) {
-        console.error("Search error:", error);
-        res.status(500).json({ 
-            error: "Server error",
-            message: error.message 
-        });
-    }
-};
 
 const shoppingPage = async (req, res) => {
     try {
@@ -67,44 +40,114 @@ const shoppingPage = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 8;
         const skip = (page - 1) * limit;
-
-        const Categories = await Category.find({ isListed: true });
         
-        let productData = await Product.find({
-            isBlocked: false,
-            category: { $in: Categories.map(category => category._id) }
-        }).select('productName productImage regularPrice salePrice size createdOn').skip(skip).limit(limit)
+        const sortBy = req.query.sort || 'newest';
+        const categoryBy = req.query.category || '';
+        const sizeBy = req.query.size || '';
+        const search = req.query.search || '';
+        
+        const Categories = await Category.find({ isListed: true });
 
-        // Default sort by newest
-        productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-        productData = productData
+        let query = {
+            isBlocked: false
+        };
+        
+        if (categoryBy) {
+            query.category = categoryBy;
+        } else {
+            query.category = { $in: Categories.map(category => category._id) };
+        }
+        
+        if (search) {
+            query.productName = { $regex: new RegExp(search, "i") };
+        }
 
-        const totalProducts = await Product.find({
-            isBlocked: false,
-            category: { $in: Categories.map(category => category._id) }
-        }).select('productName productImage regularPrice salePrice size createdOn').countDocuments();
+        if (sizeBy && sizeBy !== '') {
+            query.size = sizeBy;
+        }
+
+
+        let sortConfig = {};
+        switch(sortBy) {
+            case 'nameAsc':
+                sortConfig.productName = 1;
+                break;
+            case 'nameDesc':
+                sortConfig.productName = -1;
+                break;
+            case 'priceAsc':
+                sortConfig.salePrice = 1;
+                break;
+            case 'priceDesc':
+                sortConfig.salePrice = -1;
+                break;
+            case 'bestSeller':
+                sortConfig.bestSeller = -1;
+                break;
+            case 'popularity':
+                sortConfig.popularity = -1;
+                break;
+            default:
+                sortConfig.createdOn = -1;
+        }
+        
+        const totalProducts = await Product.countDocuments(query);
+        
+        const productData = await Product.find(query)
+            .select('productName productImage regularPrice salePrice size createdOn')
+            .sort(sortConfig)
+            .skip(skip)
+            .limit(limit);
+
+            
         const totalPages = Math.ceil(totalProducts / limit);
 
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({
+                products: productData,
+                category: Categories,
+                currentPage: page,
+                totalPages: totalPages,
+                totalProducts: totalProducts,
+                selectedCategory: categoryBy,
+                selectedSize: sizeBy
+            });
+        }
+        
+        const renderData = {
+            products: productData,
+            category: Categories,
+            currentPage: page,
+            totalPages: totalPages,
+            totalProducts: totalProducts,
+            currentSort: sortBy,
+            searchQuery: search,
+            categoryBy: categoryBy,
+            sizeBy: sizeBy
+        };
 
         if (user) {
             const verifyuser = await User.findOne({ _id: user.id, isBlocked: false });
             if (verifyuser) {
-                res.render("product", { user, products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts });
+                renderData.user = user;
             } else {
                 req.session.user = false;
-                res.render("product", { products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts  });
             }
-        } else {
-            res.render("product", { products: productData,currentPage: page,totalPages:totalPages ,totalProducts:totalProducts  });
         }
+
+        res.render("product", renderData);
+        
     } catch (error) {
         console.error("Shopping page error:", error);
-        res.status(500).send("Server error");
+        res.status(500).json({ 
+            success: false, 
+            message: "An error occurred while fetching products",
+            error: error.message 
+        });
     }
 };
 
 module.exports = {
     getProductDetais,
-    shoppingPage,
-    searchProduct
+    shoppingPage
 };

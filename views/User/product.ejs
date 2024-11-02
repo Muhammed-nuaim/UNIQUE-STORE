@@ -4,63 +4,30 @@
 	<div class="bg0 m-t-23 p-b-140">
 		<div class="container">
 			<div class="flex-w flex-sb-m p-b-52">
-				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-						All Products
-					</button>
-
-					<!-- <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".women">
-						Women
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
-						Men
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
-						Bag
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
-						Shoes
-					</button> -->
-				</div>
 				
-
-				<!-- <div class="flex-w flex-c-m m-tb-10">
-					<div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-						<i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-						<i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						 Filter
-					</div>
-
-					<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-						<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-						<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Search
-					</div>
-				</div>
-				 -->
-				<!-- Search product -->
-				<!-- <div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-							<i class="zmdi zmdi-search"></i>
-						</button>
-
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" id="search-product" name="search-product" placeholder="Search" onchange="fetchSearchProduct(event)">
-			
-					</div>	
-				</div> -->
 				<div class="flex-w flex-sb-m p-b-52">
-					<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-						<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-							All Products
-						</button>
-					</div>
 				
 					<div class="flex-w flex-c-m m-tb-10">
-						<!-- Sort Dropdown -->
+                        <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4">
+                            <select id="category-select" class="stext-106 cl6 size-104" onchange="handleCategoryFilter(this.value)">
+                                <option value="">All Categories</option>
+                                <% for (let i = 0; i < category.length; i++) { %>
+                                    <option value="<%= category[i]._id %>" <%= categoryBy === category[i]._id.toString() ? 'selected' : '' %>>
+                                        <%= category[i].name %>
+                                    </option>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4">
+                            <select id="size-select" class="stext-106 cl6 size-104" onchange="handleSize(this.value)">
+                                <option value="">All Sizes</option>
+                                <option value="1:12" <%= sizeBy === '1:12' ? 'selected' : '' %>>1:12</option>
+                                <option value="1:18" <%= sizeBy === '1:18' ? 'selected' : '' %>>1:18</option>
+                                <option value="1:64" <%= sizeBy === '1:64' ? 'selected' : '' %>>1:64</option>
+                            </select>
+                        </div>
+
 						<div class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4">
 							<select id="sort-select" class="stext-106 cl6 size-104" onchange="handleSort(this.value)">
 								<option value="">Sort By</option>
@@ -74,7 +41,6 @@
 							</select>
 						</div>
 				
-						<!-- Search -->
 						<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
 							<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
 							<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
@@ -82,7 +48,6 @@
 						</div>
 					</div>
 					
-					<!-- Search product -->
 					<div class="dis-none panel-search w-full p-t-10 p-b-15">
 						<div class="bor8 dis-flex p-l-15">
 							<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
@@ -94,196 +59,7 @@
 					</div>
 				</div>
 				
-				<!-- Add this hidden input to store current sort state -->
 				<input type="hidden" id="current-sort" value="">
-				<!-- Filter -->
-				<!-- <div class="dis-none panel-filter w-full p-t-10">
-					<div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
-						<div class="filter-col1 p-r-15 p-b-27">
-							<div class="mtext-102 cl2 p-b-15">
-								Sort By
-							</div>
-
-							<ul>
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Default
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Popularity
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Average rating
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-										Newness
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Price: Low to High
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										Price: High to Low
-									</a>
-								</li>
-							</ul>
-						</div>
-
-						<div class="filter-col2 p-r-15 p-b-27">
-							<div class="mtext-102 cl2 p-b-15">
-								Price
-							</div>
-
-							<ul>
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-										All
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										$0.00 - $50.00
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										$50.00 - $100.00
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										$100.00 - $150.00
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										$150.00 - $200.00
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<a href="#" class="filter-link stext-106 trans-04">
-										$200.00+
-									</a>
-								</li>
-							</ul>
-						</div>
-
-						<div class="filter-col3 p-r-15 p-b-27">
-							<div class="mtext-102 cl2 p-b-15">
-								Color
-							</div>
-
-							<ul>
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #222;">
-										<i class="zmdi zmdi-circle"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04">
-										Black
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #4272d7;">
-										<i class="zmdi zmdi-circle"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04 filter-link-active">
-										Blue
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #b3b3b3;">
-										<i class="zmdi zmdi-circle"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04">
-										Grey
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #00ad5f;">
-										<i class="zmdi zmdi-circle"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04">
-										Green
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #fa4251;">
-										<i class="zmdi zmdi-circle"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04">
-										Red
-									</a>
-								</li>
-
-								<li class="p-b-6">
-									<span class="fs-15 lh-12 m-r-6" style="color: #aaa;">
-										<i class="zmdi zmdi-circle-o"></i>
-									</span>
-
-									<a href="#" class="filter-link stext-106 trans-04">
-										White
-									</a>
-								</li>
-							</ul>
-						</div>
-
-						<div class="filter-col4 p-b-27">
-							<div class="mtext-102 cl2 p-b-15">
-								Tags
-							</div>
-
-							<div class="flex-w p-t-4 m-r--5">
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Aston Martin
-								</a>
-
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Ferrari
-								</a>
-
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Lamborghini
-								</a>
-
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Toyota
-								</a>
-
-								<a href="#" class="flex-c-m stext-107 cl6 size-301 bor7 p-lr-15 hov-tag1 trans-04 m-r-5 m-b-5">
-									Ford
-								</a>
-							</div>
-						</div>
-					</div>
-				</div> -->
 			</div>
 
 			<div class="row isotope-grid">
@@ -313,12 +89,6 @@
 									</span>
 								</div>
 	
-								<!-- <div class="block2-txt-child2 flex-r p-t-3">
-									<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-										<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-										<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
-									</a>
-								</div> -->
 								<div class="block2-txt-child2 flex-r p-t-3">
 									<a id="wishlist-btn-<%=products[i]._id%>" 
 									   class="btn-addwish-b2 dis-block pos-relative tooltip100" 
@@ -338,25 +108,46 @@
 					} %>
 			</div>
 
-			<!-- Load more -->
-			<div class="container mt-3">
+			
+<div class="flex-c-m flex-w w-full p-t-45">
+    <nav aria-label="Page navigation" class="w-full">
+        <ul class="pagination justify-content-center flex-wrap">
+            <% if (totalPages > 1) { %>
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                       href="<%= currentPage === 1 ? '#' : '?page=' + (currentPage - 1) %>"
+                       <%= currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : '' %>>
+                        &laquo;
+                    </a>
+                </li>
 
-				<div class="container mt-3">
-					<nav aria-label="Page navigation">
-						<ul class="pagination justify-content-center mb-20" style="margin-right: 200px;">
-				 
-				 
-							<% for (let i = 1; i <= totalPages; i++) { %>
-							<li class="page-item <%=(i === currentPage) ? 'active' : '' %>">
-								<a class="page-link" href="?page=<%= i %>"><%= i %></a>
-							</li>
-							<% } %>
-				 
-				 
-						</ul>
-					</nav>
-				 </div>
-			</div>
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <% if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                               href="?page=<%= i %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                    <% } else if (i === currentPage - 3 || i === currentPage + 3) { %>
+                        <li class="page-item disabled">
+                            <span class="page-link flex-c-m how-pagination1 trans-04 m-all-7">...</span>
+                        </li>
+                    <% } %>
+                <% } %>
+
+                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                       href="<%= currentPage === totalPages ? '#' : '?page=' + (currentPage + 1) %>"
+                       <%= currentPage === totalPages ? 'tabindex="-1" aria-disabled="true"' : '' %>>
+                        &raquo;
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+
 		</div>
 	</div>
 		
@@ -368,203 +159,358 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 	<script>
-		// Store the original products for reset
-		let originalProducts = [];
-		let currentProducts = [];
-		let lastSearchValue = '';
-		let currentSortValue = '';
-		
-		// Initialize when page loads
-		document.addEventListener('DOMContentLoaded', () => {
-			// Store the initial products
-			originalProducts = Array.from(document.querySelectorAll('.isotope-item')).map(item => ({
-				_id: item.querySelector('a').href.split('id=')[1],
-				productName: item.querySelector('.js-name-b2').textContent.trim(),
-				productImage: [item.querySelector('img').src.split('/').pop()],
-				regularPrice: parseFloat(item.querySelector('.stext-105').textContent.match(/₹(\d+)/)[1]),
-				salePrice: parseFloat(item.querySelector('.stext-105').textContent.match(/Offer Price: ₹(\d+)/)[1]),
-				size: item.querySelector('.stext-105').textContent.match(/Size:(.*)/)[1].trim()
-			}));
-			currentProducts = [...originalProducts];
-		});
-		
-		function debounce(func, wait) {
-			let timeout;
-			return function executedFunction(...args) {
-				const later = () => {
-					clearTimeout(timeout);
-					func(...args);
-				};
-				clearTimeout(timeout);
-				timeout = setTimeout(later, wait);
-			};
-		}
-		
-		const handleSearch = debounce(async (event) => {
-			const searchValue = event.target.value.trim();
-			lastSearchValue = searchValue;
-		
-			if (searchValue === '') {
-				// Reset to original products if search is cleared
-				currentProducts = [...originalProducts];
-				if (currentSortValue) {
-					handleSort(currentSortValue, false); // Apply current sort to original products
-				} else {
-					updateProductDisplay(originalProducts);
-				}
-				return;
-			}
-		
-			try {
-				const response = await fetch('/searchRoute', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({ value: searchValue })
-				});
-		
-				if (!response.ok) throw new Error('Search failed');
-		
-				const data = await response.json();
-				currentProducts = data.products;
-				
-				if (currentSortValue) {
-					handleSort(currentSortValue, false); // Apply current sort to search results
-				} else {
-					updateProductDisplay(data.products);
-				}
-			} catch (err) {
-				console.error('Search error:', err);
-			}
-		}, 300); // Debounce for 300ms
-		
-		function handleSort(value, updateSelect = true) {
-			currentSortValue = value;
-			if (updateSelect) {
-				document.getElementById('sort-select').value = value;
-			}
-		
-			const productsToSort = [...currentProducts];
-		
-			switch(value) {
-				case 'nameAsc':
-					productsToSort.sort((a, b) => a.productName.localeCompare(b.productName));
-					break;
-				case 'nameDesc':
-					productsToSort.sort((a, b) => b.productName.localeCompare(a.productName));
-					break;
-				case 'priceAsc':
-					productsToSort.sort((a, b) => a.salePrice - b.salePrice);
-					break;
-				case 'priceDesc':
-					productsToSort.sort((a, b) => b.salePrice - a.salePrice);
-					break;
-				case 'newArrivals':
-					productsToSort.sort((a, b) =>  new Date(b.createdOn) - new Date(a.createdOn));
-					break;
-				case 'bestSeller':
-					productsToSort.sort((a, b) =>  b.bestSeller - a.bestSeller);
-					break;
-				case 'popularity':
-					productsToSort.sort((a, b) =>  b.popularity - a.popularity);
-					break;
-				default:
-					if (lastSearchValue === '') {
-						productsToSort = [...originalProducts];
-					}
-			}
-		
-			updateProductDisplay(productsToSort);
-		}
-		
-		function updateProductDisplay(products) {
-			const container = document.querySelector('.isotope-grid');
-			container.innerHTML = products.map(product => `
-				<div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-					<div class="block2">
-						<div class="block2-pic hov-img0">
-							<img src="/uploads/re-image/${product.productImage[0]}" alt="${product.productName}">
-							<a href="/productDetails?id=${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-								Product View
-							</a>
-						</div>
-						<div class="block2-txt flex-w flex-t p-t-14">
-							<div class="block2-txt-child1 flex-col-l">
-								<a href="/productDetails?id=${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-									${product.productName}
-								</a>
-								<span class="stext-105 cl3">
-									<p>Original Price: <del>₹${product.regularPrice}</del></p>
-									<p>Offer Price: ₹${product.salePrice}</p>
-									<p>Size: ${product.size}</p>
-								</span>
-							</div>
-						</div>
-					</div>
-				</div>
-			`).join('');
-		}
+let currentState = {
+    page: 1,
+    category: '',
+    size: '',
+    sort: '',
+    search: ''
+};
 
-		function addWhishlist(id) {
-	  $.ajax({
-		url: "/addWhishlist",
-		type: "POST",
-		data: JSON.stringify({
-		  id: id,
-		}),
-		contentType: "application/json",
-		success: function (res) {
-		  if (res.success) {
-			// Show success message
-			Swal.fire({
-			  icon: "success",
-			  title: "Success",
-			  text: res.message,
-			});
-  
-			// Select the wishlist button using its ID
-			const wishlistButton = document.getElementById(`wishlist-btn-${id}`);
-			
-			if (res.favourite) {
-			  // Product is in the wishlist, change to the 'added' state (e.g., red icon)
-			  wishlistButton.innerHTML = `
-				<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-				  <rect width="24" height="24" fill="none" />
-				  <path fill="red" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
-				</svg>
-			  `;
-			  wishlistButton.setAttribute('data-tooltip', 'Remove from Wishlist');
-			} 
-		  } else {
-			Swal.fire({
-			  icon: "error",
-			  title: "Removed",
-			  text: res.message,
-			});
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    currentState.page = parseInt(urlParams.get('page')) || 1;
+    currentState.category = urlParams.get('category') || '';
+    currentState.size = urlParams.get('size') || '';
+    currentState.sort = urlParams.get('sort') || '';
+    currentState.search = urlParams.get('search') || '';
+    
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.value = currentState.sort;
+    }
 
-			const wishlistButton = document.getElementById(`wishlist-btn-${id}`);
+    const categorySelect =  document.getElementById('category-select');
+    if (categorySelect) {
+        categorySelect.value = currentState.category;
+    }
 
-			if(!res.favourite) {
-				wishlistButton.innerHTML = `
-				<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-				  <rect width="24" height="24" fill="none" />
-				  <path fill="black" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
-				</svg>
-			  `;
-			  wishlistButton.setAttribute('data-tooltip', 'Add to Wishlist');
-			}
-		  }
-		},
-		error: function () {
-		  Swal.fire({
-			icon: "error",
-			title: "Oops!",
-			text: "An error occurred. Please login.",
-		  }).then((result) => {
-			window.location.href = '/login';
-		  });
-		}
-	  });
-	}
-		</script>
+    const sizeSelect = document.getElementById('size-select');
+    if (sizeSelect) {
+        sizeSelect.value = currentState.size;
+    }
+    
+    const searchInput = document.getElementById('search-product');
+    if (searchInput && currentState.search) {
+        searchInput.value = currentState.search;
+    }
+
+    if (currentState.search) {
+        const searchPanel = document.querySelector('.panel-search');
+        if (searchPanel) {
+            searchPanel.classList.remove('dis-none');
+        }
+    }
+});
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+const handleSearch = debounce(async (event) => {
+    const searchValue = event.target.value.trim();
+    
+    currentState.search = searchValue;
+    currentState.page = 1; 
+    
+    await updateProducts();
+}, 300);
+
+async function handleSort(value) {
+    currentState.sort = value;
+    currentState.page = 1; 
+    await updateProducts();
+}
+
+async function handleCategoryFilter(value) {
+    try {
+        currentState.category = value;
+        currentState.page = 1;
+        await updateProducts();
+    } catch (error) {
+        console.error('Error in category filter:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to filter products. Please try again.'
+        });
+    }
+}
+
+async function handleSize(value) {
+    try {
+        currentState.size = value;
+        currentState.page = 1;
+        await updateProducts();
+    } catch (error) {
+        console.error('Error in size filter:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to filter products. Please try again.'
+        });
+    }
+}
+
+async function updateProducts() {
+    try {
+        const url = new URL(window.location.href);
+        
+        url.searchParams.delete('page');
+        url.searchParams.delete('sort');
+        url.searchParams.delete('category');
+        url.searchParams.delete('size');
+        url.searchParams.delete('search');
+        
+        url.searchParams.set('page', currentState.page);
+        if (currentState.sort) url.searchParams.set('sort', currentState.sort);
+        if (currentState.category) url.searchParams.set('category', currentState.category);
+        if (currentState.size) {
+            url.searchParams.set('size', currentState.size);
+        }
+        if (currentState.search) url.searchParams.set('search', currentState.search);
+       
+        
+        window.history.pushState({}, '', url);
+        
+        const response = await fetch(url, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch products');
+
+        const data = await response.json();
+        
+        updateProductDisplay(data.products);
+        updatePagination(data.currentPage, data.totalPages);
+        
+    } catch (err) {
+        console.error('Error updating products:', err);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Failed to update products. Please try again.'
+        });
+    }
+}
+
+function updateProductDisplay(products) {
+    const container = document.querySelector('.isotope-grid');
+    if (!container) return;
+
+    if (products.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center p-5">
+                <h3 class="text-muted">No products found</h3>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = products.map(product => `
+        <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+            <div class="block2">
+                <div class="block2-pic hov-img0">
+                    <img src="/uploads/re-image/${product.productImage[0]}" alt="${product.productName}">
+                    <a href="/productDetails?id=${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                        Product View
+                    </a>
+                </div>
+                <div class="block2-txt flex-w flex-t p-t-14">
+                    <div class="block2-txt-child1 flex-col-l">
+                        <a href="/productDetails?id=${product._id}" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                            ${product.productName}
+                        </a>
+                        <span class="stext-105 cl3">
+                            <p>Original Price: <del>₹${product.regularPrice}</del></p>
+                            <p>Offer Price: ₹${product.salePrice}</p>
+                            <p>Size: ${product.size}</p>
+                        </span>
+                    </div>
+                    <div class="block2-txt-child2 flex-r p-t-3">
+                        <a id="wishlist-btn-${product._id}" 
+                           class="btn-addwish-b2 dis-block pos-relative tooltip100" 
+                           data-tooltip="Add to Wishlist" 
+                           onclick="addWhishlist('${product._id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                                <rect width="24" height="24" fill="none" />
+                                <path fill="black" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updatePagination(currentPage, totalPages) {
+    const paginationContainer = document.querySelector('.flex-c-m.flex-w.w-full.p-t-45');
+    if (!paginationContainer) return;
+    
+    let paginationHTML = `
+        <nav aria-label="Page navigation" class="w-full">
+            <ul class="pagination justify-content-center flex-wrap">
+    `;
+    
+    if (totalPages > 1) {
+        paginationHTML += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                   href="javascript:void(0)" 
+                   onclick="${currentPage === 1 ? '' : `changePage(${currentPage - 1})`}"
+                   ${currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : ''}>
+                    &laquo;
+                </a>
+            </li>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                paginationHTML += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                           href="javascript:void(0)" 
+                           onclick="changePage(${i})">
+                            ${i}
+                        </a>
+                    </li>
+                `;
+            } else if (i === currentPage - 3 || i === currentPage + 3) {
+                paginationHTML += `
+                    <li class="page-item disabled">
+                        <span class="page-link flex-c-m how-pagination1 trans-04 m-all-7">...</span>
+                    </li>
+                `;
+            }
+        }
+
+        paginationHTML += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link flex-c-m how-pagination1 trans-04 m-all-7" 
+                   href="javascript:void(0)" 
+                   onclick="${currentPage === totalPages ? '' : `changePage(${currentPage + 1})`}"
+                   ${currentPage === totalPages ? 'tabindex="-1" aria-disabled="true"' : ''}>
+                    &raquo;
+                </a>
+            </li>
+        `;
+    }
+
+    paginationHTML += `
+            </ul>
+        </nav>
+    `;
+
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+`
+.how-pagination1 {
+    font-size: 14px;
+    color: #808080;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #e6e6e6;
+    background-color: #fff;
+}
+
+.how-pagination1:hover {
+    background-color: #717fe0;
+    color: #fff;
+    border-color: #717fe0;
+}
+
+.pagination .active .how-pagination1 {
+    background-color: #717fe0;
+    color: #fff;
+    border-color: #717fe0;
+}
+
+.page-item.disabled .how-pagination1 {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #e6e6e6;
+}
+`
+
+function addWhishlist(id) {
+    $.ajax({
+        url: "/addWhishlist",
+        type: "POST",
+        data: JSON.stringify({
+            id: id,
+        }),
+        contentType: "application/json",
+        success: function (res) {
+            if (res.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: res.message,
+                });
+
+                const wishlistButton = document.getElementById(`wishlist-btn-${id}`);
+                
+                if (res.favourite) {
+                    wishlistButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                            <rect width="24" height="24" fill="none" />
+                            <path fill="red" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
+                        </svg>
+                    `;
+                    wishlistButton.setAttribute('data-tooltip', 'Remove from Wishlist');
+                } 
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Removed",
+                    text: res.message,
+                });
+
+                const wishlistButton = document.getElementById(`wishlist-btn-${id}`);
+                if (!res.favourite) {
+                    wishlistButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+                            <rect width="24" height="24" fill="none" />
+                            <path fill="black" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
+                        </svg>
+                    `;
+                    wishlistButton.setAttribute('data-tooltip', 'Add to Wishlist');
+                }
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Oops!",
+                text: "An error occurred. Please login.",
+            }).then((result) => {
+                window.location.href = '/login';
+            });
+        }
+    });
+}
+
+document.querySelector('.js-show-search').addEventListener('click', function() {
+    const searchPanel = document.querySelector('.panel-search');
+    const searchIcon = document.querySelector('.icon-search');
+    const closeIcon = document.querySelector('.icon-close-search');
+    
+    searchPanel.classList.toggle('dis-none');
+    searchIcon.classList.toggle('dis-none');
+    closeIcon.classList.toggle('dis-none');
+});
+</script>
