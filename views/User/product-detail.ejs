@@ -66,7 +66,10 @@
 								<tr>
 									<th>Size</th>
 									<th>Quantity</th>
+									<% if (category) { %>
 									<th>Category</th>
+									<% } %>
+
 								</tr>
 								<tr>
 									<td><%=product.size %></td>
@@ -79,24 +82,14 @@
 											<p class="text text-danger">Out of stock !</p>
 										<% } %>
 									</td>
-									<td><%=category.name %></td>
+									<% if (category) { %>
+										<td><%=category.name %></td>
+									<% } %>
 								</tr>
 							</table>
 
 							<div class="flex-w flex-r-m p-b-10">
 								<div class="size-204 flex-w flex-m respon6-next">
-									<div class="wrap-num-product flex-w m-r-20 m-tb-10">
-										<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-											<i class="fs-16 zmdi zmdi-minus"></i>
-										</div>
-
-										<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product" value="1">
-
-										<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-											<i class="fs-16 zmdi zmdi-plus"></i>
-										</div>
-									</div>
-
 									<button class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail" onclick="addToCart('<%=product._id %>')">
 										Add to cart
 									</button>
@@ -300,11 +293,16 @@
 								</div>
 
 								<div class="block2-txt-child2 flex-r p-t-3">
-									<a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-										<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
-										<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
+									<a id="wishlist-btn-<%=product._id%>" 
+									   class="btn-addwish-b2 dis-block pos-relative tooltip100" 
+									   data-tooltip="Add to Wishlist" 
+									   onclick="addWhishlist('<%=product._id%>')">
+									  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+										<rect width="24" height="24" fill="none" />
+										<path fill="black" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53z" />
+									  </svg>
 									</a>
-								</div>
+								  </div>
 							</div>
 						</div>
 					</div>

@@ -10,7 +10,7 @@ const loadCartPage = async (req,res) => {
         const user = req.session.user;
 
         const existingUser = await User.findOne({_id:user.id});
-        const existingCart = await Cart.findOne({ userId: existingUser._id }).populate('items.productId')
+        const existingCart = await Cart.findOne({ userId: existingUser._id}).populate('items.productId')
             
         if(existingUser && !existingCart) {
             res.render('cartPage',{user , cartData:false , cart:false})

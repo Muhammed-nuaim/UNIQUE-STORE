@@ -6,6 +6,7 @@ const adminController = require("../controllers/admin/adminController");
 const categoryController = require("../controllers/admin/categoryController");
 const productController = require("../controllers/admin/productController");
 const orderdetailsController = require("../controllers/admin/orderdetailsController")
+const offerController = require("../controllers/admin/offerController");
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Configure Multer for file uploads
@@ -52,5 +53,11 @@ admin_route.get("/orderList",adminAuth,orderdetailsController.getOrderList);
 admin_route.get("/orderDetails",adminAuth,orderdetailsController.getOrderDetails);
 admin_route.post("/updateStatus",adminAuth,orderdetailsController.updateStatus);
 admin_route.patch("/cancellOrder",adminAuth,orderdetailsController.cancellOrder);
+
+
+//Offer Management
+admin_route.get("/productOffer",adminAuth, offerController.getProductOffer)
+admin_route.get("/categoryOffer",adminAuth, offerController.getCategoryOffer)
+admin_route.post("/addProductOffer",adminAuth,offerController.addProductOffer)
 
 module.exports = admin_route;

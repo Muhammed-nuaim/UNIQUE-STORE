@@ -1,5 +1,6 @@
 const Product = require("../../models/productModel");
 const Category = require("../../models/CategoryModel");
+const Cart = require("../../models/cartModel")
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
@@ -140,7 +141,23 @@ const getAllProducts = async(req, res) => {
 const blockProduct = async(req,res) => {
     try {
         let id =req.query.id;
+
         await Product.updateOne({_id:id},{$set:{isBlocked:true}});
+        const cart = await Cart.findOne(
+            { "items.productId": id },
+            { "items.$": 1, subTotal: 1 }
+          );
+          if(cart){
+          const itemTotalPrice = cart.items[0].totalPrice; 
+
+          await Cart.updateOne(
+            { "items.productId": id },
+            {
+              $pull: { items: { productId: id } },   
+              $inc: { subTotal: -itemTotalPrice }       
+            }
+          );
+        }
         res.redirect("/admin/products");
     } catch (error) {
         res.redirect("/admin/page-error")

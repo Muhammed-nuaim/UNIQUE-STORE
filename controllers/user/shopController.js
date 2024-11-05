@@ -7,9 +7,9 @@ const getProductDetais = async (req,res) => {
     const id = req.query.id
     const user = req.session.user;
 
-    const product = await Product.findOne({_id:id})
-    const category = await Category.findOne({_id:product.category})
-    const size = await Product.find({size:product.size})
+    const product = await Product.findOne({_id:id,isBlocked:false})
+    const category = await Category.findOne({_id:product.category,isListed:true})
+    const size = await Product.find({size:product.size,isBlocked:false})
     
     if(product) {
         if(user){
