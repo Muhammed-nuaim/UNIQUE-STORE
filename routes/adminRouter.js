@@ -59,5 +59,9 @@ admin_route.patch("/cancellOrder",adminAuth,orderdetailsController.cancellOrder)
 admin_route.get("/productOffer",adminAuth, offerController.getProductOffer)
 admin_route.get("/categoryOffer",adminAuth, offerController.getCategoryOffer)
 admin_route.post("/addProductOffer",adminAuth,offerController.addProductOffer)
+admin_route.post("/addCategoryOffer",adminAuth,offerController.addCategoryOffer)
+admin_route.delete("/removeProductOffer",adminAuth,offerController.deleteProductOffer);
+admin_route.delete("/removeCategoryOffer",adminAuth,offerController.deleteCategoryOffer);
+
 
 module.exports = admin_route;
