@@ -132,94 +132,66 @@
 
 
 <script>
-    // Handle form submission
-    function handleFormSubmit(event) {
-        event.preventDefault();
+function handleFormSubmit(event) {
+    event.preventDefault();
 
-        if (!validateForm()) {
-            return false;
-        }
+    if (!validateForm()) {
+        return false;
+    }
 
-          const  name = document.getElementById("name").value.trim();
-          const value = document.getElementById("value").value.trim();
-          const  date = document.getElementById("date").value.trim();
-          const  offerType = document.getElementById("offerType").value;
-          const selectedCategoryId = document.getElementById("categoryId").value;
-
-        // Send data via fetch
-        fetch('/admin/addCategoryOffer', {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({name,value,date,offerType,selectedCategoryId}),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.error || 'Something went wrong');
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            Swal.fire({
-                icon: 'success',
-                title: "Success",
-                text: "Category offer added successfully",
-            }).then(() => {
-                location.reload();
-            });
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: "error",
-                title: "Oops!",
-                text: error.message,
-            });
-        });
+    const formData = {
+        name: document.getElementById("name").value.trim(),
+        value: document.getElementById("value").value.trim(),
+        date: document.getElementById("date").value.trim(),
+        offerType: document.getElementById("offerType").value,
+        selectedCategoryId: document.getElementById("categoryId").value
     };
+
+    addCategoryOffer(formData);
+    return false;
+}
+
 function validateForm() {
     clearErrorMessages();
+    let isValid = true;
 
     const name = document.getElementById("name").value.trim();
     const value = document.getElementById("value").value.trim();
     const date = document.getElementById("date").value.trim();
-    const offerType = document.getElementById("offerType").value;
-    let isValid = true;
+    const categoryId = document.getElementById("categoryId").value;
+
+    // Category validation
+    if (!categoryId) {
+        displayErrorMessage("category-error", "Please select a category");
+        isValid = false;
+    }
 
     // Name validation
-    if (name === "") {
-        displayErrorMessage("name-error", "Please enter a name.");
+    if (!name) {
+        displayErrorMessage("name-error", "Please enter a name");
         isValid = false;
     } else if (!/^[a-zA-Z0-9\s]+$/.test(name)) {
-        displayErrorMessage("name-error", "Offer name should contain only letters, numbers and spaces.");
+        displayErrorMessage("name-error", "Offer name should contain only letters, numbers and spaces");
         isValid = false;
     }
 
     // Value validation
-    if(offerType == "Percentage" ) {
-        if (value === "" || isNaN(value) || parseFloat(value) <= 0 || parseFloat(value) > 95) {
-        displayErrorMessage("value-error", "Please enter a valid positive offer under the 95 Percentage.");
+    const numValue = parseFloat(value);
+    if (!value || isNaN(numValue) || numValue <= 0 || numValue > 95) {
+        displayErrorMessage("value-error", "Please enter a valid positive offer under 95%");
         isValid = false;
     }
-    } else {
-        if (value === "" || isNaN(value) || parseFloat(value) <=0 ) {
-            displayErrorMessage("value-error", "Please enter a valid positive offer.")
-            isValid = false;
-        }
-    }
-    
 
     // Date validation
-    if (date === "") {
-        displayErrorMessage("date-error", "Please enter a valid date.");
+    if (!date) {
+        displayErrorMessage("date-error", "Please enter a valid date");
         isValid = false;
     } else {
         const selectedDate = new Date(date);
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
         if (selectedDate < today) {
-            displayErrorMessage("date-error", "Please select a future date.");
+            displayErrorMessage("date-error", "Please select a future date");
             isValid = false;
         }
     }
@@ -230,7 +202,7 @@ function validateForm() {
 function displayErrorMessage(elementId, message) {
     const errorElement = document.getElementById(elementId);
     if (errorElement) {
-        errorElement.innerText = message;
+        errorElement.textContent = message;
         errorElement.style.display = "block";
     }
 }
@@ -238,8 +210,43 @@ function displayErrorMessage(elementId, message) {
 function clearErrorMessages() {
     const errorElements = document.getElementsByClassName("error-message");
     Array.from(errorElements).forEach((element) => {
-        element.innerText = "";
+        element.textContent = "";
         element.style.display = "none";
+    });
+}
+
+function addCategoryOffer(formData) {
+    $.ajax({
+        url: "/admin/addCategoryOffer",
+        type: "POST",
+        data: JSON.stringify(formData),
+        contentType: "application/json",
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: response.message || "Category offer added successfully"
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Error",
+                    text: response.message || "Failed to add category offer"
+                });
+            }
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "An error occurred. Please login again."
+            }).then(() => {
+                window.location.href = "/admin/login";
+            });
+        }
     });
 }
 

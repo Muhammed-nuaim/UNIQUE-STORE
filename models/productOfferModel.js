@@ -5,7 +5,6 @@ const productOfferSchema = new Schema ({
     offerName:{
         type: String,
         required: true,
-        unique : true
     },
     createdOn : {
         type: Date,
@@ -27,6 +26,6 @@ const productOfferSchema = new Schema ({
     }
 })
 
-const productOffer = mongoose.model("produtOffer",productOfferSchema)
+const productOffer = mongoose.model("productOffer",productOfferSchema)
 
 module.exports = productOffer;

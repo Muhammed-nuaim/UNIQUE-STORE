@@ -5,7 +5,6 @@ const categoryOfferSchema = new Schema ({
     offerName:{
         type: String,
         required: true,
-        unique : true
     },
     createdOn : {
         type: Date,

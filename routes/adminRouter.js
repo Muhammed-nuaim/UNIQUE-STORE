@@ -7,6 +7,7 @@ const categoryController = require("../controllers/admin/categoryController");
 const productController = require("../controllers/admin/productController");
 const orderdetailsController = require("../controllers/admin/orderdetailsController")
 const offerController = require("../controllers/admin/offerController");
+const couponController = require("../controllers/admin/couponController");
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Configure Multer for file uploads
@@ -62,6 +63,14 @@ admin_route.post("/addProductOffer",adminAuth,offerController.addProductOffer)
 admin_route.post("/addCategoryOffer",adminAuth,offerController.addCategoryOffer)
 admin_route.delete("/removeProductOffer",adminAuth,offerController.deleteProductOffer);
 admin_route.delete("/removeCategoryOffer",adminAuth,offerController.deleteCategoryOffer);
+
+//coupon Management
+admin_route.get("/couponManagement",adminAuth,couponController.getCouponManagement);
+admin_route.post("/addCoupon",adminAuth,couponController.addCoupon);
+admin_route.patch("/unlistCoupon",adminAuth,couponController.unlistCoupon);
+admin_route.patch("/listCoupon",adminAuth,couponController.listCoupon);
+admin_route.delete("/removeCoupon",adminAuth,couponController.deleteCoupon);
+
 
 
 module.exports = admin_route;

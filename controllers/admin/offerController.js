@@ -3,7 +3,7 @@ const Category = require("../../models/CategoryModel");
 const User = require('../../models/userModel');
 const Order = require('../../models/orderModel')
 const ProductOffer = require("../../models/productOfferModel");
-const CategoryOffer = require("../../models/categoryOfferModel")
+const CategoryOffer = require("../../models/categoryOfferModel");
 
 const getProductOffer = async(req,res) => {
     try {
@@ -85,16 +85,12 @@ const deleteProductOffer = async (req,res) => {
     try {
         const id = req.body.id        
         const existingProductOffer = await ProductOffer.findOne({_id:id})
-        console.log("a");
         let newPrice = 0;
         
 
         if(existingProductOffer) {
             const existingProduct = await Product.findOne({_id:existingProductOffer.productId})
-        console.log("b");
-
             if(existingProduct) {
-        console.log("c");
                 newPrice = existingProduct.regularPrice - (existingProduct.regularPrice * (5/100))
                 await Product.updateOne(
                     {_id:existingProduct._id},
@@ -119,71 +115,98 @@ const deleteProductOffer = async (req,res) => {
 
 const addCategoryOffer = async (req,res) => {
     try {        
-        const {name,value,date,offerType,selectedCategoryId} = req.body
-        const existingProduct = await Product.find({category:selectedCategoryId})
-        let offerPrice = 0;
-        console.log(existingProduct);
+        const {name, value, date, offerType, selectedCategoryId} = req.body;
         
-        if(offerType == "Percentage") {
-            for(let item of existingProduct ) {
-            offerPrice = item.regularPrice - (item.regularPrice * (value/100))
-            if(existingProduct && offerPrice){
-                const newOfferUpdated = new CategoryOffer({
-                    offerName:name,
-                    offerPrice:value,
-                    expireOn:date,
-                    categoryId:selectedCategoryId,
-                })
-                await newOfferUpdated.save()
-                if(newOfferUpdated) {
-                    await Product.updateOne({
-                        category:selectedCategoryId,isBlocked:false
-                    },{salePrice:offerPrice})
-                }
-                res.status(200).json({success:true})
-            } else {
-                res.status(201).json({success:false})
-            }
-            }
+        const existingProduct = await Product.find({category: selectedCategoryId});
+        
+        if (!existingProduct || existingProduct.length === 0) {
+            return res.status(200).json({
+                success: false,
+                message: "This Category has no Products"
+            });
         }
-        
+
+        if (offerType === "Percentage") {
+            const newOfferUpdated = new CategoryOffer({
+                offerName: name,
+                offerPrice: value,
+                expireOn: date,
+                categoryId: selectedCategoryId,
+            });
+            await newOfferUpdated.save();
+
+            for (let item of existingProduct) {
+                const offerPrice = item.regularPrice - (item.regularPrice * (value/100));
+                await Product.updateOne(
+                    { _id: item._id, category: selectedCategoryId, isBlocked: false },
+                    { salePrice: Math.round(offerPrice * 100) / 100 }
+                );
+            }
+
+            return res.status(200).json({
+                success: true,
+                message: "Category offer added successfully"
+            });
+        } 
+
+        return res.status(200).json({
+            success: false,
+            message: "Invalid offer type"
+        });
         
     } catch (error) {
         console.error(error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while adding the offer"
+        });
     }
-}
+};
  
 
-const deleteCategoryOffer = async (req,res) => {
+const deleteCategoryOffer = async (req, res) => {
     try {
         const id = req.body.id        
-        const existingCategoryOffer = await CategoryOffer.findOne({_id:id})
+        const existingCategoryOffer = await CategoryOffer.findOne({_id: id})
         let newPrice = 0;
         
-
-        if(existingCategoryOffer) {
-            const existingProduct = await Product.find({category:existingCategoryOffer.categoryId})
-            if(existingProduct) {
-            for(let item of existingProduct ) {
-                newPrice = item.regularPrice - (item.regularPrice * (5/100))
-                await Product.updateOne(
-                    {_id:item._id},
-                    {salePrice:newPrice}
-                )
-                await CategoryOffer.deleteOne(
-                    {_id:id}
-                )
-                res.status(200).json({success:true,message:"CategoryOffer removed Succesfully"})
-            }
-            } else {
-            res.status(201).json({success:false,message:"This category is not Found,Please try again"})
-            }
-        } else {
-            res.status(201).json({success:false,message:"This CategoryOffer is not Found,Please try again"})
+        if (!existingCategoryOffer) {
+            return res.status(201).json({
+                success: false, 
+                message: "This CategoryOffer is not Found, Please try again"
+            });
         }
+
+        const existingProducts = await Product.find({category: existingCategoryOffer.categoryId});
+        
+        if (!existingProducts || existingProducts.length === 0) {
+            return res.status(201).json({
+                success: false, 
+                message: "This category is not Found, Please try again"
+            });
+        }
+
+        for (let item of existingProducts) {
+            newPrice = item.regularPrice - (item.regularPrice * (5/100));
+            await Product.updateOne(
+                {_id: item._id},
+                {salePrice: newPrice}
+            );
+        }
+
+        await CategoryOffer.deleteOne({_id: id});
+
+        return res.status(200).json({
+            success: true,
+            message: "CategoryOffer removed Successfully"
+        });
+
     } catch (error) {
-        res.status(500)
-        console.error(error)
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while adding the offer"
+        });
     }
 }
 
