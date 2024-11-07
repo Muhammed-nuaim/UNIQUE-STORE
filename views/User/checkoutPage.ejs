@@ -136,10 +136,12 @@
                             <strong>₹<%=cart.subTotal %></strong>
                         </div>
                         <button id="confirmOrderBtn" class="btn btn-dark w-100 mb-3">CONFIRM TO ORDER</button>
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Enter your Coupon code">
-                            <button class="btn btn-outline-secondary">Apply</button>
-                        </div>
+                        <form method="post" action="/applyCoupon" id="coupnForm" onsubmit="return handleFormSubmit(event)">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Enter your Coupon code" id="couponCode">
+                                <button class="btn btn-outline-secondary" type="submit">Apply</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -151,6 +153,8 @@
     
     <%- include('../layouts/user/footer.ejs') %>
 
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Wait for the DOM to be fully loaded
         document.addEventListener("DOMContentLoaded", function() {
@@ -198,4 +202,49 @@
         });
 
 
+        function handleFormSubmit(event) {
+        event.preventDefault();
+
+        const couponCode = document.getElementById("couponCode").value.trim();
+        applyCoupon(couponCode, "<%= cart.subTotal %>");
+        return false;
+    }
+
+    function applyCoupon(couponCode, subTotal) {
+        $.ajax({
+            url: "/applyCoupon",
+            type: "POST",
+            data: JSON.stringify({
+                couponCode: couponCode,
+                subTotal: subTotal
+            }),
+            contentType: "application/json",  // Corrected here
+            success: function(res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: res.message,
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "!Oops",
+                        text: res.message,
+                    });
+                }
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "A server error has occurred."
+                }).then(() => {
+                    window.location.href = "/login";
+                });
+            }
+        });
+    }
     </script>

@@ -72,5 +72,4 @@ admin_route.patch("/listCoupon",adminAuth,couponController.listCoupon);
 admin_route.delete("/removeCoupon",adminAuth,couponController.deleteCoupon);
 
 
-
 module.exports = admin_route;

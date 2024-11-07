@@ -9,6 +9,7 @@ const addressController = require("../controllers/user/addressController")
 const cartController = require("../controllers/user/cartController")
 const checkoutController = require("../controllers/user/checkoutController")
 const orderController = require("../controllers/user/orderController")
+const couponController = require("../controllers/user/couponController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 
 // Error Management
@@ -73,5 +74,8 @@ user_route.get("/myOrders",userAuth,orderController.getOrders);
 user_route.get("/viewOrderDetails",userAuth,orderController.getOrderDetails);
 user_route.patch("/cancellOrder",userAuth,orderController.cancellOrder);
 
+
+//couonManagement 
+user_route.post("/applyCoupon",userAuth,couponController.applyCoupon);
 
 module.exports = user_route;

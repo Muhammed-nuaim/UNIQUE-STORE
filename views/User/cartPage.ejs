@@ -16,8 +16,6 @@
 	</div>
 		
 
-	<!-- Shoping Cart -->
-	<!-- <form class="bg0 p-t-75 p-b-85"> -->
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -104,7 +102,6 @@
 				</div>
 			</div>
 		</div>
-	<!-- </form> -->
 		
 	
 		
@@ -159,6 +156,40 @@
         }
     });
 }
+
+// function checkout () {
+// 	event.preventDefault();
+// 	$.ajax({
+// 		url: "/checkout",
+// 		type:"GET",
+// 		contentType: "application/json",
+// 		success: function (res) {
+// 			if(!res.success) {
+// 				Swal.fire({
+// 					icon:"warning",
+// 					title:"!Oops",
+// 					text: res.message,
+// 					showCancelButton: true,
+// 					confirmButtonText: "Continue Shopping",
+// 					cancelButtonText: "Close",
+// 				}).then((result) => {
+// 					if (result.isConfirmed) {
+// 						window.location.href = '/shopping';
+// 					}
+// 				})
+// 			}
+// 		},
+// 		error: function() {
+// 			Swal.fire({
+// 		        icon: "error",
+// 		        title: "Oops!",
+// 		        text: "An error occurred. Please login.",
+// 	        }).then((result) => {
+// 		        window.location.href = '/login';
+// 		    });
+// 		}
+// 	})
+// }
 
 function confirmDelete(id) {
         event.preventDefault();

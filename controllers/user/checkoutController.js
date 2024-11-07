@@ -4,6 +4,7 @@ const Category = require("../../models/CategoryModel");
 const Address = require("../../models/addressModel");
 const Cart =require("../../models/cartModel");
 const Order = require("../../models/orderModel")
+const Coupon = require("../../models/couponModel");
 
 
 const loadCheckout = async(req,res) => {
@@ -12,8 +13,13 @@ const loadCheckout = async(req,res) => {
         const existingUser = await User.findOne({_id:user.id})
         const cart = await Cart.findOne({userId:existingUser._id}).populate('items.productId')
         const address = await Address.findOne({userId:existingUser._id})
+        
         if(cart && existingUser && address) {
-            res.render('checkoutPage', {user , cart , cartData: cart.items , addressData:address.addresses})
+            if(cart.items.length > 0) {
+                res.render('checkoutPage', {user , cart , cartData: cart.items , addressData:address.addresses})
+            } else {
+                res.status(201).json({success:false,message:"Your cart is empty. Add products to continue."})
+            }
         } else {
             res.redirect('/pageNotFound');
         }
