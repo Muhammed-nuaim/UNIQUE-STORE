@@ -126,6 +126,12 @@
                             <span>items(<%= cartData.length %>)</span>
                             <span>₹<%=cart.subTotal %></span>
                         </div>
+                        <% if (couponApply !== false ) { %>
+                        <div class="d-flex justify-content-between mb-3 text-success">
+                            <span>Discount For Coupon </span>
+                            <span><%= couponApply.discountPrice %></span>
+                        </div>
+                        <% } %>
                         <div class="d-flex justify-content-between mb-3 text-success">
                             <span>Delivery Charge </span>
                             <span>FREE</span>
@@ -136,12 +142,17 @@
                             <strong>₹<%=cart.subTotal %></strong>
                         </div>
                         <button id="confirmOrderBtn" class="btn btn-dark w-100 mb-3">CONFIRM TO ORDER</button>
-                        <form method="post" action="/applyCoupon" id="coupnForm" onsubmit="return handleFormSubmit(event)">
+                        <% if (couponApply === false ) { %>
+                        <form method="post" id="coupnForm" onsubmit="return handleFormSubmit(event)">
                             <div class="input-group">
                                 <input type="text" class="form-control" placeholder="Enter your Coupon code" id="couponCode">
                                 <button class="btn btn-outline-secondary" type="submit">Apply</button>
                             </div>
                         </form>
+                        
+                        <% } else { %>
+                            <button class="btn btn-outline-secondary" type="button" onclick="cancellCoupon('<%=couponApply.code %>','<%=cart.subTotal%>')">Cancell The Applied Cooupon</button></a>
+                        <% } %> 
                     </div>
                 </div>
             </div>
@@ -216,6 +227,44 @@
             type: "POST",
             data: JSON.stringify({
                 couponCode: couponCode,
+                subTotal: subTotal
+            }),
+            contentType: "application/json",  // Corrected here
+            success: function(res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: res.message,
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "!Oops",
+                        text: res.message,
+                    });
+                }
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Server Error",
+                    text: "A server error has occurred."
+                }).then(() => {
+                    window.location.href = "/login";
+                });
+            }
+        });
+    }
+
+    function cancellCoupon( couponDetails ,subTotal ) {
+        $.ajax({
+            url: "/cancellCoupon",
+            type: "POST",
+            data: JSON.stringify({
+                couponCode: couponDetails,
                 subTotal: subTotal
             }),
             contentType: "application/json",  // Corrected here

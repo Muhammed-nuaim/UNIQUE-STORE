@@ -43,6 +43,12 @@
                                 <div class="col-6">Subtotal:</div>
                                 <div class="col-6 text-end">₹<%=orderData.finalAmount %></div>
                             </div>
+                            <% if (couponApply !== false ) { %>
+                            <div class="row mb-2">
+                                <div class="col-6">Discount For Coupon:</div>
+                                <div class="col-6 text-end text-success"><%= couponApply.discountPrice %></div>
+                            </div>
+                            <% } %>
                             <div class="row mb-2">
                                 <div class="col-6">Delivery Charge:</div>
                                 <div class="col-6 text-end text-success">Free</div>

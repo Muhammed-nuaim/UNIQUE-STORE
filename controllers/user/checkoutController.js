@@ -10,13 +10,14 @@ const Coupon = require("../../models/couponModel");
 const loadCheckout = async(req,res) => {
     try {
         const user = req.session.user;
+        const couponApply = req.session.coupon ? req.session.coupon : false
         const existingUser = await User.findOne({_id:user.id})
         const cart = await Cart.findOne({userId:existingUser._id}).populate('items.productId')
         const address = await Address.findOne({userId:existingUser._id})
         
         if(cart && existingUser && address) {
             if(cart.items.length > 0) {
-                res.render('checkoutPage', {user , cart , cartData: cart.items , addressData:address.addresses})
+                res.render('checkoutPage', {user , cart , cartData: cart.items , addressData:address.addresses , couponApply })
             } else {
                 res.status(201).json({success:false,message:"Your cart is empty. Add products to continue."})
             }
@@ -96,6 +97,7 @@ const saveOrder = async (req,res) => {
 const orderSuccess = async(req,res) => {
     try {
         const user = req.session.user;
+        const couponApply = req.session.coupon ? req.session.coupon : false
         const existingUser = await User.findOne({_id:user.id})
         const order = await Order.findOne({userId:existingUser._id}).sort({createdOn: -1 }).populate("orderedItems.productId","address")
         const cart = await Cart.findOne({userId:existingUser._id});
@@ -103,7 +105,8 @@ const orderSuccess = async(req,res) => {
         if(cart) {
             await Cart.deleteOne({userId:existingUser._id})
             if(order && existingUser) {
-                res.render('order-success',{user ,orderData: order})
+                req.session.coupon = false
+                res.render('order-success',{user ,couponApply,orderData: order})
             }
         }
     } catch (error) {

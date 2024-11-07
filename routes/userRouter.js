@@ -77,5 +77,6 @@ user_route.patch("/cancellOrder",userAuth,orderController.cancellOrder);
 
 //couonManagement 
 user_route.post("/applyCoupon",userAuth,couponController.applyCoupon);
+user_route.post("/cancellCoupon",userAuth,couponController.cancellCoupon);
 
 module.exports = user_route;
