@@ -93,8 +93,8 @@
 
                         <div class="border rounded p-3 mb-3">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="payment" id="UPI Method">
-                                <label class="form-check-label" for="UPI Method">UPI Method</label>
+                                <input class="form-check-input" type="radio" name="payment" id="PayPal">
+                                <label class="form-check-label" for="PayPal">PayPal</label>
                             </div>
                         </div>
 
@@ -114,6 +114,9 @@
                     </div>
                 </div>
             </div>
+            <!-- <form action="/pay" method="post">
+                <input type="submit" value="Buy">
+            </form> -->
 
             <!-- Cart Summary -->
             <div class="col-lg-4">
@@ -186,29 +189,50 @@
                     return; // Stop the function if either is missing
                 }
 
-                // Prepare data to send
-                const orderData = {
-                    addressId: selectedAddress,
-                    paymentMethod: selectedPaymentMethod,
-                };
+                if (selectedPaymentMethod === "PayPal") {
+    fetch('/payPal', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            subTotal: '<%= cart.subTotal %>',
+            addressId: selectedAddress,
+            paymentMethod: selectedPaymentMethod,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.approval_url) {
+            window.location.href = data.approval_url;
+        } else {
+            alert("Error initiating PayPal payment. Please try again.");
+        }
+    })
+    .catch(error => console.error('Error:', error));
+} else {
+    const orderData = {
+        addressId: selectedAddress,
+        paymentMethod: selectedPaymentMethod,
+    };
 
-                // Use AJAX (fetch) to send data to the backend route
-                fetch('/order/success', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(orderData),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = "/order-success";
-                    } else {
-                        alert("Error placing order. Please try again.");
-                    }
-                })
-                .catch((error) => console.error('Error:', error));
+    fetch('/order/success', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "/order-success";
+        } else {
+            alert("Error placing order. Please try again.");
+        }
+    })
+    .catch((error) => console.error('Error:', error));
+}
             });
         });
 

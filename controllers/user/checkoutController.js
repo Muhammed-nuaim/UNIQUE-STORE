@@ -51,7 +51,6 @@ const saveOrder = async (req,res) => {
                 }
             }
         } )
-        
 
         if(existingUser && address && cart) {
             const addressData = address.addresses.find(id => id._id == addressId);
