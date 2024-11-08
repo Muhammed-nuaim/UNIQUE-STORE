@@ -12,6 +12,7 @@ const orderController = require("../controllers/user/orderController")
 const couponController = require("../controllers/user/couponController")
 const paymentController = require("../controllers/user/paymentController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
+const convertCurrency = require('../controllers/user/currencyConverterController');
 
 // Error Management
 user_route.get('/pageNotFound', userController.pageNotFound);
@@ -70,13 +71,14 @@ user_route.post("/incrementQuantity",userAuth,cartController.incrementQuantity);
 //orderManagement
 user_route.get("/checkout",userAuth,checkoutController.loadCheckout);
 user_route.post("/order/success",userAuth,checkoutController.saveOrder);
+user_route.get("/order/success",userAuth,checkoutController.saveOrder);
 user_route.get("/order-success",userAuth,checkoutController.orderSuccess);
 user_route.get("/myOrders",userAuth,orderController.getOrders);
 user_route.get("/viewOrderDetails",userAuth,orderController.getOrderDetails);
 user_route.patch("/cancellOrder",userAuth,orderController.cancellOrder);
 
 //PaymentManagement
-user_route.post('/payPal',userAuth,paymentController.getPayPal);
+user_route.post('/payPal',userAuth,paymentController.getPayPal); 
 user_route.get('/successPayPal',userAuth,paymentController.successPayPal)
 user_route.get('/cancelPayPal',userAuth,paymentController.cancelPayPal)
 

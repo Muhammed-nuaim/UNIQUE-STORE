@@ -33,8 +33,9 @@ const loadCheckout = async(req,res) => {
 const saveOrder = async (req,res) => {
     try {
         const user = req.session.user;
-        const {addressId , paymentMethod} = req.body
-
+        const orderData = req.session.order;
+        const {addressId , paymentMethod} = orderData ? orderData : req.body
+        
         const existingUser = await User.findOne({_id:user.id});
         const address = await Address.findOne({"addresses._id":addressId})
         
@@ -77,9 +78,8 @@ const saveOrder = async (req,res) => {
                         altPhone:addressData.altPhone,
                     }]
                 })
-                await addToOrder.save();
-
-                res.status(201).json({success:true})
+                await addToOrder.save();                
+                orderData ? res.redirect('/order-success') : res.status(200).json({success:true})
             } else {
                 res.status(400).json({success:false,message:"invalid address , Please choose another address"})
             }

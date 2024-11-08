@@ -172,69 +172,61 @@
     <script>
         // Wait for the DOM to be fully loaded
         document.addEventListener("DOMContentLoaded", function() {
-            // Select the confirm order button by its ID
-            const confirmOrderBtn = document.getElementById("confirmOrderBtn");
+    const confirmOrderBtn = document.getElementById("confirmOrderBtn");
 
-            // Add a click event listener to the button
-            confirmOrderBtn.addEventListener("click", function () {
-                // Get selected address ID
-                const selectedAddress = document.querySelector('input[name="address"]:checked')?.id;
+    confirmOrderBtn.addEventListener("click", function () {
+        const selectedAddress = document.querySelector('input[name="address"]:checked')?.id;
+        const selectedPaymentMethod = document.querySelector('input[name="payment"]:checked')?.id;
 
-                // Get selected payment method ID
-                const selectedPaymentMethod = document.querySelector('input[name="payment"]:checked')?.id;
+        if (!selectedAddress || !selectedPaymentMethod) {
+            alert("Please select both an address and a payment method.");
+            return;
+        }
+        
 
-                // Check if both address and payment method are selected
-                if (!selectedAddress || !selectedPaymentMethod) {
-                    alert("Please select both an address and a payment method.");
-                    return; // Stop the function if either is missing
+        if (selectedPaymentMethod === "PayPal") {
+            fetch('/payPal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subTotal: '<%= cart.subTotal %>',
+                    addressId: selectedAddress,
+                    paymentMethod: selectedPaymentMethod,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.approval_url) {
+                    window.location.href = data.approval_url;
+                } else {
+                    alert("Error initiating PayPal payment. Please try again.");
                 }
-
-                if (selectedPaymentMethod === "PayPal") {
-    fetch('/payPal', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            subTotal: '<%= cart.subTotal %>',
-            addressId: selectedAddress,
-            paymentMethod: selectedPaymentMethod,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.approval_url) {
-            window.location.href = data.approval_url;
+            })
+            .catch(error => console.error('Error:', error));
         } else {
-            alert("Error initiating PayPal payment. Please try again.");
-        }
-    })
-    .catch(error => console.error('Error:', error));
-} else {
-    const orderData = {
-        addressId: selectedAddress,
-        paymentMethod: selectedPaymentMethod,
-    };
+            const orderData = {
+                addressId: selectedAddress,
+                paymentMethod: selectedPaymentMethod,
+            };
 
-    fetch('/order/success', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            window.location.href = "/order-success";
-        } else {
-            alert("Error placing order. Please try again.");
+            fetch('/order/success', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "/order-success";
+                } else {
+                    alert("Error placing order. Please try again.");
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
-    })
-    .catch((error) => console.error('Error:', error));
-}
-            });
-        });
+    });
+});
+
 
 
         function handleFormSubmit(event) {
