@@ -20,9 +20,6 @@ const convertCurrency = async (amount) => {
         const usdToInrRate = response.data.rates[fromCurrency];
         const usdToUsdRate = response.data.rates[toCurrency];
         const convertedAmount = amount * (usdToUsdRate / usdToInrRate);
-  
-        console.log(convertedAmount);
-        
         
         return convertedAmount.toFixed(2);
       } else {
@@ -137,7 +134,8 @@ const successPayPal = async (req,res) => {
               }
           });
     } catch (error) {
-        
+        console.error("PayPal payment Success error:", error);
+        res.status(500).json({ success: false, message: "PayPal payment Doesn't Success." });
     }
 }
 
@@ -145,7 +143,8 @@ const cancelPayPal = async(req,res) => {
     try {
             res.redirect("/checkout")
     } catch (error) {
-        
+        console.error("PayPal payment Cancelation error:", error);
+        res.status(500).json({ success: false, message: "PayPal payment Cancelation failed." });
     }
 }
 

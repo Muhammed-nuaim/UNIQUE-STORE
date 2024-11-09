@@ -1,6 +1,7 @@
 const Product = require("../../models/productModel");
 const Category = require("../../models/CategoryModel");
 const Cart = require("../../models/cartModel")
+const Whishlist = require("../../models/whishlistModel")
 const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
@@ -143,21 +144,35 @@ const blockProduct = async(req,res) => {
         let id =req.query.id;
 
         await Product.updateOne({_id:id},{$set:{isBlocked:true}});
-        const cart = await Cart.findOne(
+        const carts = await Cart.find(
             { "items.productId": id },
             { "items.$": 1, subTotal: 1 }
-          );
-          if(cart){
-          const itemTotalPrice = cart.items[0].totalPrice; 
-
-          await Cart.updateOne(
-            { "items.productId": id },
-            {
-              $pull: { items: { productId: id } },   
-              $inc: { subTotal: -itemTotalPrice }       
+          ).populate("items")
+          for (let cart of carts) {
+            let totalDecrement = 0;
+            
+            for (let item of cart.items) {
+                console.log(item);
+                
+                if (item.productId == id) {
+                    totalDecrement = item.Quantity * item.price;
+                }
             }
-          );
+            const newSubTotal = cart.subTotal-totalDecrement
+            console.log(newSubTotal);
+            
+            await Cart.updateOne(
+                { _id: cart._id },
+                {
+                    $pull: { items: { productId: id } },    
+                    $set: { subTotal: newSubTotal }        
+                }
+            );
         }
+        await Whishlist.updateMany(
+            {productId:id},
+            {$pull:{productId:id}}
+        )
         res.redirect("/admin/products");
     } catch (error) {
         res.redirect("/admin/page-error")
@@ -181,7 +196,6 @@ const getEditProduct = async (req, res) => {
         const existingCategory = await Category.findOne({_id: product.category, isListed: true});
         const category = await Category.find({isListed: true});
 
-        // Ensure product.productImage is always an array of length 4
         const normalizedImages = [...(product.productImage || [])];
         while (normalizedImages.length < 4) {
             normalizedImages.push(null);
@@ -190,7 +204,7 @@ const getEditProduct = async (req, res) => {
 
         res.render("edit-product", {
             product: product,
-            pcat: existingCategory,
+            pcat: existingCategory ? existingCategory : false,
             cat: category
         });
         
@@ -212,6 +226,15 @@ const editProduct = async (req, res) => {
         const data = req.body;
         const category = await Category.findOne({name: data.category,isListed:true})
         const newImages = req.files.map(file => file.filename);  
+        const Carts = await Cart.find(
+            { "items.productId": id , "items.Quantity":{ $gt: data.quantity }},
+            { "items.$": 1, subTotal: 1 }
+          ).populate("items")
+
+        if(Carts) {
+            
+        }
+        
 
         // Update basic fields
         const updateFields = {
