@@ -227,13 +227,38 @@ const editProduct = async (req, res) => {
         const category = await Category.findOne({name: data.category,isListed:true})
         const newImages = req.files.map(file => file.filename);  
         const Carts = await Cart.find(
-            { "items.productId": id , "items.Quantity":{ $gt: data.quantity }},
+            { "items.productId": id, "items.Quantity": { $gt: data.quantity } },
             { "items.$": 1, subTotal: 1 }
-          ).populate("items")
-
-        if(Carts) {
-            
+        ).populate("items");
+        
+        if (Carts.length > 0) {
+            await Cart.updateMany(
+                {
+                    "items.productId": id,
+                    "items.Quantity": { $gt: data.quantity }
+                },
+                {
+                    $set: { "items.$[elem].Quantity": data.quantity }
+                },
+                {
+                    arrayFilters: [{ "elem.productId": id }]
+                }
+            );
         }
+        
+        await Cart.updateMany(
+            { "items.productId": id },
+            {
+                $set: {
+                    subTotal: data.quantity * data.salePrice,
+                    "items.$[elem].price": data.salePrice,
+                    "items.$[elem].totalPrice": data.quantity * data.salePrice
+                }
+            },
+            {
+                arrayFilters: [{ "elem.productId": id }]
+            }
+        );
         
 
         // Update basic fields

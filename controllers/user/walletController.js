@@ -1,12 +1,77 @@
 const User = require("../../models/userModel");
-const Product = require("../../models/productModel");
-const Category = require("../../models/CategoryModel");
-const Address = require("../../models/addressModel");
-const Cart =require("../../models/cartModel");
-const Order = require("../../models/orderModel")
-const Coupon = require("../../models/couponModel");
 const Wallet = require("../../models/walletModel");
 const axios = require("axios");
+
+
+
+const loadWallet = async (req,res) => {
+    try {
+        const user = req.session.user;
+        const existingUserWallet = await Wallet.findOne({userId:user.id}).populate("transactions")        
+
+        if(existingUserWallet) {
+            existingUserWallet.transactions.sort((a, b) => b.transactionDate - a.transactionDate);
+            res.render('walletPage',{walletDetails:existingUserWallet,user})
+        } else {
+            res.render('walletPage',user)
+        }
+    } catch (error) {
+        console.log("loading the Wallet Page has some issues", error);
+        res.status(500).json({success:false,message:"Server error"})
+    }
+}
+
+const addMoneyToWallet = async(req,res) => {
+    try {
+        const addAmount = req.session.walletAmount.addAmount
+        const user = req.session.user
+        const existingUserWallet = await Wallet.findOne({userId:user.id})
+
+        if(user) {
+            if(existingUserWallet) {
+                const newBalance = Number(existingUserWallet.balance) + Number(addAmount)
+                
+                await Wallet.updateOne(
+                    { userId: user.id },
+                    {
+                        $set: { balance: newBalance },
+                        $push: {
+                            transactions: {
+                                tranctransactionDate: Date.now(),
+                                transactionType: "Deposit",
+                                transactionStatus: "Completed",
+                                amount: addAmount
+                            }
+                        }
+                    }
+                );
+    
+                res.redirect('/wallet')
+            } else {
+                const newWallet = new Wallet({
+                    userId:user.id,
+                    balance:addAmount,
+                    transactions:[{
+                        tranctransactionDate: Date.now(),
+                        transactionType:"Deposit",
+                        transactionStatus:"Completed",
+                        amount:addAmount
+                    }]
+                })
+                await newWallet.save()
+                res.redirect('/wallet')
+            }
+        } else {
+            res.redirect('/wallet')
+        }
+
+
+    } catch (error) {
+        console.log("Money adding in wallet has some issues", error);
+        res.status(500).json({success:false,message:"Server error"})
+    }
+}
+
 
 //currencyConverter
 const convertCurrency = async (amount) => {
@@ -44,25 +109,22 @@ paypal.configure({
 
 const getPayPal = async(req,res) => {
     try {
-        const {subTotal,addressId,paymentMethod} = req.body;
-        const USDCurrency = await convertCurrency(subTotal);
-        console.log("Converted amount in USD:", USDCurrency);
+        const addAmount = req.body.addAmount
+        const USDCurrency = await convertCurrency(addAmount);
         
-        req.session.order = {
+        req.session.walletAmount = {
             USDCurrency: USDCurrency,
-            subTotal: subTotal,
-            addressId: addressId,
-            paymentMethod: paymentMethod
+            addAmount:addAmount
         }
         
         const create_payment_json = {
             "intent": "sale",
             "payer": {
-                "payment_method": paymentMethod
+                "payment_method": "Paypal"
             },
             "redirect_urls": {
-                "return_url": "http://localhost:3000/successPayPal",
-                "cancel_url": "http://localhost:3000/cancelPayPal"
+                "return_url": "http://localhost:3000/walletSuccessPayPal",
+                "cancel_url": "http://localhost:3000/walletCancelPayPal"
             },
             "transactions": [{
                 "item_list": {
@@ -106,16 +168,14 @@ const successPayPal = async (req,res) => {
     try {
             const payerId = req.query.PayerID;
             const paymentId = req.query.paymentId;
-            const orderData = req.session.order;
-            console.log(payerId,paymentId,orderData.subTotal);
-            
+            const walletData = req.session.walletAmount;
           
             const execute_payment_json = {
               "payer_id": payerId,
               "transactions": [{
                   "amount": {
                       "currency": "USD",
-                      "total": orderData.USDCurrency
+                      "total": walletData.USDCurrency
                   }
               }]
             };
@@ -125,7 +185,7 @@ const successPayPal = async (req,res) => {
                   console.log(error.response);
                   throw error;
               } else {
-                  res.redirect("/order/success")
+                  res.redirect("/addMoneyToWallet")
               }
           });
     } catch (error) {
@@ -136,7 +196,7 @@ const successPayPal = async (req,res) => {
 
 const cancelPayPal = async(req,res) => {
     try {
-            res.redirect("/checkout")
+            res.redirect("/wallet")
     } catch (error) {
         console.error("PayPal payment Cancelation error:", error);
         res.status(500).json({ success: false, message: "PayPal payment Cancelation failed." });
@@ -144,53 +204,10 @@ const cancelPayPal = async(req,res) => {
 }
 
 
-const walletPayment = async (req,res) => {
-    try {
-        const {subTotal,addressId,paymentMethod} = req.body;
-        
-        const user = req.session.user
-        const existingUserWallet = await Wallet.findOne({userId:user.id}).populate("transactions")
-
-
-        if(existingUserWallet) {
-            if(existingUserWallet.balance >= subTotal) {
-                req.session.order = {
-                    subTotal: subTotal,
-                    addressId: addressId,
-                    paymentMethod: paymentMethod
-                }
-                
-                const newBalance = existingUserWallet.balance - subTotal
-                await Wallet.updateOne(
-                    {userId:user.id},
-                    {$set:{balance:newBalance},
-                    $push: {
-                        transactions: {
-                            transactionDate: Date.now(),
-                            transactionType: "Debit",
-                            transactionStatus: "Completed",
-                            amount: subTotal
-                        }
-                    }}
-                )
-            res.status(200).json({success:true})
-            } else {
-            res.status(201).json({success:false,message:"Insufficient balance in wallet to purchase this product."})
-            }
-        } else {
-            res.status(201).json({success:false,message:"Insufficient balance in wallet to purchase this product."})
-        }
-
-    } catch (error) {
-        console.error("Wallet Through Payment error:", error);
-        res.status(500).json({ success: false, message: "Wallet Through payment failed." });
-    }
-}
-
-
 module.exports = {
+    loadWallet,
+    addMoneyToWallet,
     getPayPal,
     successPayPal,
-    cancelPayPal,
-    walletPayment
+    cancelPayPal
 }

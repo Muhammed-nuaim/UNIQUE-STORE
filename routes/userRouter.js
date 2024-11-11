@@ -11,6 +11,7 @@ const checkoutController = require("../controllers/user/checkoutController")
 const orderController = require("../controllers/user/orderController")
 const couponController = require("../controllers/user/couponController")
 const paymentController = require("../controllers/user/paymentController")
+const walletController = require("../controllers/user/walletController")
 const { userAuth, adminAuth } = require("../middlewares/auth");
 const convertCurrency = require('../controllers/user/currencyConverterController');
 
@@ -53,7 +54,6 @@ user_route.delete("/deleteAddress",userAuth,addressController.deleteAddress);
 //shop Management
 user_route.get("/productDetails",shopController.getProductDetais);
 user_route.get("/shopping",shopController.shoppingPage)
-// user_route.post("/searchRoute",shopController.searchProduct)
 
 
 //Whishlist Management
@@ -81,9 +81,17 @@ user_route.patch("/cancellOrder",userAuth,orderController.cancellOrder);
 user_route.post('/payPal',userAuth,paymentController.getPayPal); 
 user_route.get('/successPayPal',userAuth,paymentController.successPayPal)
 user_route.get('/cancelPayPal',userAuth,paymentController.cancelPayPal)
+user_route.post('/paymentThroughWallet',userAuth,paymentController.walletPayment)
 
 //couonManagement 
 user_route.post("/applyCoupon",userAuth,couponController.applyCoupon);
 user_route.post("/cancellCoupon",userAuth,couponController.cancellCoupon);
+
+//CouponManagement
+user_route.get("/wallet",userAuth,walletController.loadWallet);
+user_route.post("/addMoneyThroughPaypal",userAuth,walletController.getPayPal);
+user_route.get("/walletSuccessPayPal",userAuth,walletController.successPayPal);
+user_route.get("/walletCancelPayPal",userAuth,walletController.cancelPayPal);
+user_route.get("/addMoneyToWallet",userAuth,walletController.addMoneyToWallet);
 
 module.exports = user_route;

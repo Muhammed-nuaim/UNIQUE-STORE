@@ -41,7 +41,7 @@ const saveOrder = async (req,res) => {
         
         const cart = await Cart.findOne({userId:existingUser}).populate("items.productId")
         const cartItems = cart.items.map( item => {
-            if(item.productId) {
+            if(item.productId,item.Quantity > 0) {
                 return {
                     productId:item.productId,
                     productImage:item.productId.productImage[0],
@@ -53,7 +53,7 @@ const saveOrder = async (req,res) => {
             }
         } )
 
-        if(existingUser && address && cart) {
+        if(existingUser && address && cart && cartItems.length > 0) {
             const addressData = address.addresses.find(id => id._id == addressId);
             for (const item of cartItems) {
                 await Product.updateOne(
@@ -61,7 +61,7 @@ const saveOrder = async (req,res) => {
                     { $inc: { quantity: -item.quantity } }
                 );
             }
-            if(addressData && paymentMethod) {
+            if(addressData && paymentMethod ) {
                 const addToOrder = new Order({
                     userId: existingUser._id,
                     finalAmount: cart.subTotal,
@@ -78,6 +78,8 @@ const saveOrder = async (req,res) => {
                         altPhone:addressData.altPhone,
                     }]
                 })
+                console.log("ji");
+                
                 await addToOrder.save();                
                 orderData ? res.redirect('/order-success') : res.status(200).json({success:true})
             } else {
@@ -88,7 +90,7 @@ const saveOrder = async (req,res) => {
         }
         
     } catch (error) {
-        console.error(error);
+        console.log(error);
         res.status(500).json({success:false,message:"An error occured. Please try again"});
     }
 }
@@ -105,6 +107,7 @@ const orderSuccess = async(req,res) => {
             await Cart.deleteOne({userId:existingUser._id})
             if(order && existingUser) {
                 req.session.coupon = false
+                req.session.order = false               
                 res.render('order-success',{user ,couponApply,orderData: order})
             }
         }
